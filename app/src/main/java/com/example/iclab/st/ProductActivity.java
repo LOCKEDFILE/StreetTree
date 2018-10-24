@@ -38,7 +38,7 @@ public class ProductActivity extends AppCompatActivity {
     File newfile = new File(Environment.getExternalStorageDirectory(),"Test.pdf");
     ArrayAdapter<String> listAdapter2 = null;
     ArrayAdapter<String> listAdapter = null;
-    String attachmentUrl;
+    String attachmentUrl=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +46,7 @@ public class ProductActivity extends AppCompatActivity {
         setContentView(R.layout.activity_product);
 
         final ListView listview = findViewById(R.id.productlist);
-        Button backBtn4 = findViewById(R.id.backBtn4);
+
         final Button backBtn5 = findViewById(R.id.backBtn5);
         final List<String> attach = new ArrayList<>();//
         final List<String> listName0 = new ArrayList<>();// 리스트 전체
@@ -54,19 +54,11 @@ public class ProductActivity extends AppCompatActivity {
         final List<String> listName2 = new ArrayList<>();// ㅁㅁㅁ-ㅁㅁㅁ-ㅁ
         final List<String> listName3 = new ArrayList<>();// ㅁㅁㅁ-ㅁㅁㅁ-ㅁㅁㅁ
 //
-        CookieSyncManager.createInstance(ProductActivity.this.getApplicationContext());
-        CookieSyncManager.getInstance().sync();
+//        CookieSyncManager.createInstance(ProductActivity.this.getApplicationContext());
+//        CookieSyncManager.getInstance().sync();
 
 
-        // 뒤로 버튼 누르면 기능선택으로 다시 이동
-        backBtn4.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
 
-                Intent intent = new Intent(getApplicationContext(), FunctionActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
         // 리스트 뒤로가기 느낌 버튼 추가. 리스트 3개인 이유
 
 
@@ -142,56 +134,61 @@ public class ProductActivity extends AppCompatActivity {
                     ////////////////
                     AsyncHttpClient client = new AsyncHttpClient();
                     PersistentCookieStore a=new PersistentCookieStore(ProductActivity.this);
-                    client.setCookieStore(a);
-                    client.setURLEncodingEnabled(false);
-                    client.get("http://220.69.209.49"+attachmentUrl, new FileAsyncHttpResponseHandler(ProductActivity.this) {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, File response) {
-                            if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                                FileOutputStream os;
-                                try{
-                                    os = new FileOutputStream(newfile);
-                                    os.write(fileToBinary(response));
-                                    os.close();
-                                }catch (IOException e){
-                                    e.printStackTrace();
-                                }
-                                if (newfile.exists()) {
-                                    Intent intent=new Intent(Intent.ACTION_VIEW);
-                                    intent.setDataAndType(
-                                            FileProvider.getUriForFile(ProductActivity.this, getApplicationContext().getPackageName()+ ".fileprovider", newfile)
-                                            , "application/pdf");
-                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                    startActivity(intent);
 
-                                }else {
-                                    Toast.makeText(ProductActivity.this, "PDF 파일이 없습니다.", Toast.LENGTH_SHORT).show();
+                    if(attachmentUrl!=null) {
+                        client.setCookieStore(a);
+                        client.setURLEncodingEnabled(false);
+                            client.get("http://220.69.209.49"+attachmentUrl, new FileAsyncHttpResponseHandler(ProductActivity.this) {
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, File response) {
+                                if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                                    FileOutputStream os;
+                                    try {
+                                        os = new FileOutputStream(newfile);
+                                        os.write(fileToBinary(response));
+                                        os.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    if (newfile.exists()) {
+                                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                                        intent.setDataAndType(
+                                                FileProvider.getUriForFile(ProductActivity.this, getApplicationContext().getPackageName() + ".fileprovider", newfile)
+                                                , "application/pdf");
+                                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                        startActivity(intent);
+
+                                    } else {
+                                        Toast.makeText(ProductActivity.this, "PDF 파일이 없습니다.", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    Log.d("Error", "메모리 로드 안됨");
+                                }
+                                /////////////////// 캐시 파일 비우기
+                                File dir = new File(getCacheDir().getPath());
+                                if (dir.exists()) {// 캐시파일 비우기
+                                    for (File f : dir.listFiles()) {
+                                        f.delete();
+                                    }
                                 }
                             }
-                            else {
-                              Log.d("Error", "메모리 로드 안됨");
-                            }
-                            /////////////////// 캐시 파일 비우기
-                            File dir = new File(getCacheDir().getPath());
-                            if (dir.exists()) {// 캐시파일 비우기
-                                for (File f : dir.listFiles()) {
-                                    f.delete();
-                                }
-                            }
-                        }
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
-                            Log.e("Test", "실패 "+ statusCode+"\n"+file.getName()
-                            +file+"\n"+file.toString());
 
-                        }
-                    });
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
+                                Log.e("Test", "실패 " + statusCode + "\n" + file.getName()
+                                        + file + "\n" + file.toString());
+                                Toast.makeText(ProductActivity.this ,"로그인을 다시해주세요.",Toast.LENGTH_SHORT).show();
 
+                            }
+                        });
+                    }
+                    else{
+                        Toast.makeText(ProductActivity.this,"파일이 서버에 없습니다.",Toast.LENGTH_SHORT).show();
+                    }
 
                 }
             }
         });
-
 
         backBtn5.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -220,13 +217,13 @@ public class ProductActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        CookieSyncManager.getInstance().startSync();
+//        CookieSyncManager.getInstance().startSync();
 
     }
     @Override
     protected void onPause() {
         super.onPause();
-        CookieSyncManager.getInstance().stopSync();
+//        CookieSyncManager.getInstance().stopSync();
 
     }
     public static byte[] fileToBinary(File file) {//  파일을 binary 값으로

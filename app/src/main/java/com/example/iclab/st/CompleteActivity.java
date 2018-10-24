@@ -1,10 +1,12 @@
 package com.example.iclab.st;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -50,13 +52,19 @@ import static com.example.iclab.st.ValueprintActivity.is_appended;
 public class CompleteActivity extends AppCompatActivity{
 
     String extraData;
-
+    String firstData;
+    String longstr;
+    TextView data, extra;
+    Button resultBtn,resultBtn2;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_complete);
-        TextView data, extra;
-        Button resultBtn = findViewById(R.id.resultBtn);
+
+        resultBtn = findViewById(R.id.resultBtn);
+        resultBtn2= findViewById(R.id.resultBtn2);
+
         data = findViewById(R.id.dataText);
         extra = findViewById(R.id.extradataText);
 
@@ -65,13 +73,14 @@ public class CompleteActivity extends AppCompatActivity{
         data.setText("현장명 :  " + GCSurvey.siteName+"\n발주처 :  " + GCSurvey.clientName +"\n실측일 :  " + GCSurvey.createdAt+ "\n담당자 :  "+GCSurvey.authorFullName);
 
         extraData="";
+        firstData="";
 
         for(int i=0;i<GCSurvey.list.size();i++) {
             String pointSum="";
             for(int j=0;j<4&&GCSurvey.list.get(i).points[j]!=null;j++)
                 pointSum+=GCSurvey.list.get(i).points[j]+"  ";
 
-            extraData += "No. " + (i + 1) + "\n보호판 이름: " + GCSurvey.list.get(i).plate_id + "\n 뿌리 값: " + pointSum + "\n\n";// 마지막 페이지 출력문
+            firstData += "No. " + (i + 1) + "\n보호판 이름: " + GCSurvey.list.get(i).plate_id + "\n 뿌리 값: " + pointSum + "\n\n";// 마지막 페이지 출력문
 
         }
 
@@ -103,18 +112,15 @@ public class CompleteActivity extends AppCompatActivity{
             if(GCSurvey.list.get(i).frameCheck)
             {
                 int ch =-1;
-                for(int k=0;k<plateId.size();k++)
-                {
+                for(int k=0;k<plateId.size();k++) {
                     if(plateId.get(k).contains(GCSurvey.list.get(i).plate_id))
                         ch=k;
                 }
-                if(!list3.contains(frameId.get(ch)))
-                {
+                if(!list3.contains(frameId.get(ch))) {
                     list3.add(frameId.get(ch));
                     list2.add(1);
                 }
-                else
-                {
+                else {
                     int ch2=-1;
                     for(int j=0;j<list3.size();j++)
                         if(list3.get(j).equals(frameId.get(ch)))
@@ -125,24 +131,33 @@ public class CompleteActivity extends AppCompatActivity{
             }
 
         }
-//        // frameid : list2
-//        for(int i=0;i<plateId.size();i++)
-//        {
-//            for(int k=0;k<list.size();k++)
-//                if(plateId.get(i).contains(list.get(k)) && GCSurvey)
-//
-//        }
-
-
-        String longstr ="";
+        longstr ="";
         for(int i =0;i<list1.size();i++)
             longstr += list.get(i) +" : " +list1.get(i)+" 조\n";
         longstr += "\n";
         for(int i =0;i<list2.size();i++)
             longstr += list3.get(i) +" : " +list2.get(i)+" 조\n";
 
-        extraData += longstr;
+        extraData=longstr;
         extra.setText(extraData);
+        resultBtn2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                if(event.getAction()==MotionEvent.ACTION_UP) {
+                    if (extraData.equals(longstr)) {
+                        extraData = firstData;
+                        resultBtn2.setText("기본");
+                    } else {
+                        resultBtn2.setText("상세");
+                        extraData = longstr;
+                    }
+                    extra.setText(extraData);
+                }
+
+                return true;
+            }
+        });
+
 
         // 완료 버튼 누르면 기능선택 화면으로 다시 이동
         resultBtn.setOnClickListener(new Button.OnClickListener() {
@@ -194,4 +209,8 @@ public class CompleteActivity extends AppCompatActivity{
             }
         });
     }
+
+
+
+
 }

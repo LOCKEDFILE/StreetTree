@@ -1,5 +1,6 @@
 package com.example.iclab.st;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -36,6 +39,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
@@ -45,6 +50,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -52,6 +58,9 @@ import java.util.concurrent.ExecutionException;
 
 import cz.msebera.android.httpclient.Header;
 
+import static com.example.iclab.st.IntroActivity.addressData;
+import static com.example.iclab.st.MapActivity.addressStr;
+import static com.example.iclab.st.MapActivity.getAddressName;
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
 import static com.example.iclab.st.RootActivity.imageId;
 
@@ -65,7 +74,6 @@ public class SurveyActivity extends AppCompatActivity {
     EditText inputTN;
 
     RadioGroup rg,rg1,rg2;
-
     TextView noTree;
     int index = 0;
     CheckBox ckBox;
@@ -75,6 +83,7 @@ public class SurveyActivity extends AppCompatActivity {
     String goon;
     String gu;
 
+    View[] line;
 
     EditText et;
     String etStr="";
@@ -86,34 +95,52 @@ public class SurveyActivity extends AppCompatActivity {
 
     static ArrayList<String> plateId=new ArrayList<>();
     static ArrayList<String> frameId=new ArrayList<>();
-    LinearLayout a;
+    AlertDialog.Builder alt_bld;
     TextView plateView;
-    Boolean frameCh;
+    Boolean frameCh=false;
     Boolean gagakCh=true;
     Boolean jijuguCh=true;
+    static String store ="";
+    Button completeBtn;
+    double latitude;
+    double longitude;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
 
+        //
+        line=new View[9];
+        line[0]=findViewById(R.id.view1);
+        line[1]=findViewById(R.id.view1_1);
+        line[2]=findViewById(R.id.view1_2);
+        line[3]=findViewById(R.id.view2);
+        line[4]=findViewById(R.id.view2_1);
+        line[5]=findViewById(R.id.view2_2);
+        line[6]=findViewById(R.id.view3);
+        line[7]=findViewById(R.id.view3_1);
+        line[8]=findViewById(R.id.view3_2);
+        for(int i=0;i<9;i++)
+            line[i].setVisibility(View.INVISIBLE);
+        //
         plateView=findViewById(R.id.selectPP);
 
-        sp1=new Spinner(this);
-        sp2=new Spinner(this);
-        sp3=new Spinner(this);
+        if(store.length() != 0)
+            plateView.setText(store);
 
-        a=new LinearLayout(this);
         // 위도 경도 좌표 값
         Intent preIntent = getIntent();
-        final double latitude = preIntent.getDoubleExtra("latitude", 0.0f);
-        final double longitude = preIntent.getDoubleExtra("longitude", 0.0f);
+       latitude = preIntent.getDoubleExtra("latitude", 0.0f);
+       longitude = preIntent.getDoubleExtra("longitude", 0.0f);
         Button nextBtn = findViewById(R.id.nextBtn);
         final Button startBtn = findViewById(R.id.SurveyStart);
         Button rootBtn = findViewById(R.id.rootBtn);
-        Button completeBtn =findViewById(R.id.completeBtn);
+        completeBtn =findViewById(R.id.completeBtn);
         Button modifyBtn = findViewById(R.id.modifyBtn);
         final Button memobutton=findViewById(R.id.memobutton);
-
+//        if(store.length() == 0)
+//            completeBtn.setEnabled(false);
         noTree=findViewById(R.id.number);
 
         noTree.setText("No. "+(GCSurvey.list.size()+1));
@@ -127,6 +154,8 @@ public class SurveyActivity extends AppCompatActivity {
         ckBox = findViewById(R.id.checkBox);
         inputP=new EditText[4];
         for(int k=0;k<4;k++){
+
+
             inputP[k]=new EditText(SurveyActivity.this);
             int pointId=R.id.inputP4_1+k;
             inputP[k]=findViewById(pointId);
@@ -227,170 +256,235 @@ public class SurveyActivity extends AppCompatActivity {
             }
         });
 
-        RadioGroup frameRg=new RadioGroup(this);
-
-        final RadioButton frameRg1=new RadioButton(this);
-        final RadioButton frameRg2=new RadioButton(this);
-
-        frameRg1.setText("있음");
-        frameRg2.setText("없음");
-
-        frameRg.addView(frameRg1);
-        frameRg.addView(frameRg2);
-
-
-
-        frameRg1.setChecked(true);
-        frameCh=true;
-        frameRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public  void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                if(i == frameRg1.getId()) {// 1
-                    frameCh=true;
-
-
-                }
-                else if(i == frameRg2.getId()) {// 2
-                    frameCh=false;
-                }
-
-            }
-        });
-
-        a.addView(sp1);
-        a.addView(sp2);
-        a.addView(sp3);
-        a.addView(frameRg);
-
-        AlertDialog.Builder alt_bld = new AlertDialog.Builder(SurveyActivity.this);
-        alt_bld.setCancelable(
-                false).setPositiveButton("완료",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                    }
-                }).setNegativeButton("취소",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                    }
-                });
-
-        alt_bld.setView(a);
-        final AlertDialog alert = alt_bld.create();
-        alert.setTitle("보호판 선택");
 
         // 수정 버튼 누르면 보호판 선택 화면으로 전환
         modifyBtn.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
+                RadioGroup frameRg;
+                alt_bld = new AlertDialog.Builder(SurveyActivity.this);
+                alt_bld.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
 
+                    }
+                });
+
+                // xml파일을 dialog로 붙이기
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.survey_dialog, null);
+
+                sp1 = dialogView.findViewById(R.id.sp1);
+                sp2= dialogView.findViewById(R.id.sp2);
+                sp3= dialogView.findViewById(R.id.sp3);
+                sp1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
+                        str1=list1.get(index);
+
+                        sp2.invalidate();
+                        list2.clear();
+                        for(int i=0;i<plateId.size();i++){
+                            int j=plateId.get(i).indexOf("-");
+                            if(str1.equals(plateId.get(i).substring(0,j))){
+                                int k=plateId.get(i).substring(j+1).indexOf("-");
+                                if(!list2.contains(plateId.get(i).substring(j+1,k+j+1))) {
+                                    list2.add(plateId.get(i).substring(j + 1, k+j+1));
+                                }
+                            }
+
+                        }
+
+                        Collections.sort(list2);
+                        ArrayAdapter<String> listAdap2 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list2);
+                        sp2.setAdapter(listAdap2);
+
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
+
+
+
+                sp2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
+                        str2=str1+"-"+list2.get(index);
+                        plateView.setText(str2);
+                        list3.clear();
+//                completeBtn.setEnabled(true);
+                        store = plateView.getText().toString();
+
+                        for(int i=0;i<plateId.size();i++){
+                            if(plateId.get(i).contains(str2)){
+                                int j = plateId.get(i).lastIndexOf("-");
+                                if(!list3.contains(plateId.get(i).substring(j+1))){
+                                    list3.add(plateId.get(i).substring(j+1));
+                                }
+                            }
+                        }
+                        Collections.sort(list3);
+                        list3.add(0,"없음");
+                        ArrayAdapter<String> listAdap3 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list3);
+                        sp3.setAdapter(listAdap3);
+
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
+
+                // plateView 에 출력
+                sp3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int ind, long l) {
+//                completeBtn.setEnabled(true);
+                        if(ind==0){
+                            plateView.setText(str2);
+                            startBtn.setVisibility(View.VISIBLE);
+//                    GCSurvey.list.get(GCSurvey.list.size()-1).plate_id=str2+"-"+list3.get(ind);
+                        }
+                        else{
+                            plateView.setText(str2+"-"+list3.get(ind));
+                            store = plateView.getText().toString();
+                            startBtn.setVisibility(View.INVISIBLE);
+//                    GCSurvey.list.get(GCSurvey.list.size()-1).plate_id=str2;
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
+                frameRg=dialogView.findViewById(R.id.group);
+                frameRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public  void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+                        if(i == R.id.radioButton) {// 1
+                            frameCh=true;
+                        }
+                        else if(i == R.id.radioButton2) {// 2
+                            frameCh=false;
+                        }
+
+                    }
+                });
+                alt_bld.setView(dialogView);
+                alt_bld.setTitle("보호판 선택");
                 Collections.sort(list1);
                 ArrayAdapter<String> listAdap1 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list1);
                 sp1.setAdapter(listAdap1);
-
-                alert.show();
-
-
+                alt_bld.show();
             }
         });
 
-        sp1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
-                str1=list1.get(index);
-
-                list2.clear();
-                for(int i=0;i<plateId.size();i++){
-                    int j=plateId.get(i).indexOf("-");
-                    if(str1.equals(plateId.get(i).substring(0,j))){
-                        int k=plateId.get(i).substring(j+1).indexOf("-");
-                        if(!list2.contains(plateId.get(i).substring(j+1,k+j+1))) {
-                            list2.add(plateId.get(i).substring(j + 1, k+j+1));
-                        }
-                    }
-
-                }
-
-
-                Collections.sort(list2);
-                ArrayAdapter<String> listAdap2 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list2);
-                sp2.setAdapter(listAdap2);
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-
-
-        sp2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
-                str2=str1+"-"+list2.get(index);
-                list3.clear();
-
-
-
-                for(int i=0;i<plateId.size();i++){
-                    if(plateId.get(i).contains(str2)){
-                        int j = plateId.get(i).lastIndexOf("-");
-                        if(!list3.contains(plateId.get(i).substring(j+1))){
-                            list3.add(plateId.get(i).substring(j+1));
-                        }
-                    }
-                }
-                Collections.sort(list3);
-                list3.add(0,"없음");
-                ArrayAdapter<String> listAdap3 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list3);
-                sp3.setAdapter(listAdap3);
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        // plateView 에 출력
-        sp3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int ind, long l) {
-
-
-
-                if(ind==0){
-                    plateView.setText(str2);
-                    startBtn.setVisibility(View.VISIBLE);
-//                    GCSurvey.list.get(GCSurvey.list.size()-1).plate_id=str2+"-"+list3.get(ind);
-                }
-                else{
-                    plateView.setText(str2+"-"+list3.get(ind));
-                    startBtn.setVisibility(View.INVISIBLE);
-//                    GCSurvey.list.get(GCSurvey.list.size()-1).plate_id=str2;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
+//        sp1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
+//                str1=list1.get(index);
+//
+//                sp2.invalidate();
+//                list2.clear();
+//                for(int i=0;i<plateId.size();i++){
+//                    int j=plateId.get(i).indexOf("-");
+//                    if(str1.equals(plateId.get(i).substring(0,j))){
+//                        int k=plateId.get(i).substring(j+1).indexOf("-");
+//                        if(!list2.contains(plateId.get(i).substring(j+1,k+j+1))) {
+//                            list2.add(plateId.get(i).substring(j + 1, k+j+1));
+//                        }
+//                    }
+//
+//                }
+//
+//                Collections.sort(list2);
+//                ArrayAdapter<String> listAdap2 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list2);
+//                sp2.setAdapter(listAdap2);
+//
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
+//
+//
+//
+//        sp2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
+//                str2=str1+"-"+list2.get(index);
+//                plateView.setText(str2);
+//                list3.clear();
+////                completeBtn.setEnabled(true);
+//                store = plateView.getText().toString();
+//
+//                for(int i=0;i<plateId.size();i++){
+//                    if(plateId.get(i).contains(str2)){
+//                        int j = plateId.get(i).lastIndexOf("-");
+//                        if(!list3.contains(plateId.get(i).substring(j+1))){
+//                            list3.add(plateId.get(i).substring(j+1));
+//                        }
+//                    }
+//                }
+//                Collections.sort(list3);
+//                list3.add(0,"없음");
+//                ArrayAdapter<String> listAdap3 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list3);
+//                sp3.setAdapter(listAdap3);
+//
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
+//
+//        // plateView 에 출력
+//        sp3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int ind, long l) {
+////                completeBtn.setEnabled(true);
+//                if(ind==0){
+//                    plateView.setText(str2);
+//                    startBtn.setVisibility(View.VISIBLE);
+////                    GCSurvey.list.get(GCSurvey.list.size()-1).plate_id=str2+"-"+list3.get(ind);
+//                }
+//                else{
+//                    plateView.setText(str2+"-"+list3.get(ind));
+//                    store = plateView.getText().toString();
+//                    startBtn.setVisibility(View.INVISIBLE);
+////                    GCSurvey.list.get(GCSurvey.list.size()-1).plate_id=str2;
+//                }
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
         // 다음 버튼 누르면 맵 화면으로 전환
         nextBtn.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MapActivity.class);//  테스트로 인해 잠시 변경
-                intent.putExtra("latitude", latitude);
-                intent.putExtra("longitude", longitude);
-                make_list(latitude, longitude); // 저장
-                Gson newGson = new Gson();
-                String json = newGson.toJson(GCSurvey);
-                SaveSharedPreference.setUserData(SurveyActivity.this, json);
-                startActivity(intent);
-                finish();
+                if (store.length() != 0) {
+                    Intent intent = new Intent(getApplicationContext(), MapActivity.class);//  테스트로 인해 잠시 변경
+                    intent.putExtra("latitude", latitude);
+                    intent.putExtra("longitude", longitude);
+                    make_list(latitude, longitude); // 저장
+                    Gson newGson = new Gson();
+                    String json = newGson.toJson(GCSurvey);
+                    SaveSharedPreference.setUserData(SurveyActivity.this, json);
+                    startActivity(intent);
+                    finish();
+                }
+                else{
+                    Toast.makeText(SurveyActivity.this, "보호판을 선택하세요", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -404,13 +498,21 @@ public class SurveyActivity extends AppCompatActivity {
         });
 
         // 실측완료 버튼 누르면 결과출력 화면으로 전환
-        completeBtn.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), CompleteActivity.class);
-                make_list(latitude, longitude); // 저장
-
-                startActivity(intent);
-                finish();
+        completeBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                if(event.getAction()==MotionEvent.ACTION_UP) {
+                    if (store.length() != 0) {
+                        Intent intent = new Intent(getApplicationContext(), CompleteActivity.class);
+                        make_list(latitude, longitude); // 저장
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(SurveyActivity.this, "보호판을 선택하세요", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                }
+                return true;
             }
         });
 
@@ -424,7 +526,7 @@ public class SurveyActivity extends AppCompatActivity {
 
                 et=new EditText(getApplicationContext());
                 et.setHint("여기에 메모를 입력하세요.");
-
+//                et.setMaxEms(100);
                 alt_bld.setView(et);
                 alt_bld.setCancelable(
                         false).setPositiveButton("완료",
@@ -455,10 +557,14 @@ public class SurveyActivity extends AppCompatActivity {
         frame.removeView(point4);
         for(int k=0;k<4;k++)
             frame.removeView(inputP[k]);
+        for(int i=0;i<9;i++)
+            line[i].setVisibility(View.INVISIBLE);
         if(index!=0){
             frame.addView(point4);
             for(int k=0;k<2+index;k++)
                 frame.addView(inputP[k]);
+            for(int i=0;i<9;i++)
+                line[i].setVisibility(View.VISIBLE);
         }
 
     }
@@ -466,32 +572,90 @@ public class SurveyActivity extends AppCompatActivity {
     {
         for(int k=0;index==2?k<4:k<3;k++)
             points[k]=inputP[k].getText().toString();
-        Geocoder gCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        List<Address> addr = null;
+//        Geocoder gCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+//        List<Address> addr = null;
+//
+//        try {
+//            addr = gCoder.getFromLocation(la, lo, 1);
+//            Address a = addr.get(0);
+////            String s[];
+//
+//            Log.e("주소 ",a+" ");
+//            for (int i = 0; i <= a.getMaxAddressLineIndex(); i++) {
+//                FindCode fCode= new FindCode();
+//                //if(a.getFeatureName())
+//                String loc=a.getLocality();
+//                if(a.getSubLocality()!=null&&!loc.contains("서울")) {
+//                    loc += a.getSubLocality();
+//                }
+//                else if(loc!=null&&loc.contains("서울"))
+//                    loc=a.getSubLocality();
+//                if(a.getFeatureName().equals("시청역"))
+//                    goon=fCode.kmaJson("중구");
+//                else
+//                    goon=fCode.kmaJson(loc);// 군
+//                sido=goon.substring(0,2);// 시
+//                gu=fCode.finder(a.getThoroughfare(),goon);// 구
+//             }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-        try {
-            addr = gCoder.getFromLocation(la, lo, 1);
-            Address a = addr.get(0);
-            String s[];
-            for (int i = 0; i <= a.getMaxAddressLineIndex(); i++) {
-                FindCode fCode= new FindCode();
-                //if(a.getFeatureName())
-                String loc=a.getLocality();
-                if(a.getSubLocality()!=null&&!loc.contains("서울")) {
-                    loc += a.getSubLocality();
-                }
-                else if(loc!=null&&loc.contains("서울"))
-                    loc=a.getSubLocality();
-                goon=fCode.kmaJson(loc);// 군
-                sido=goon.substring(0,2);// 시
-                gu=fCode.finder(a.getThoroughfare(),goon);// 구
-             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        getAddressName(latitude,longitude);
+        //  시 군 구 바꾸기
+        String add[]=addressStr.split(" ");
+
+        add[0]=shortToLong(add[0]);
+
+        sido=Integer.toString(addressData.sidoMap.get(add[0]));
+
+        int sidoLoc=addressData.name.indexOf(add[0]);
+        if(checkAdd(add[1])) {
+            int goonLoc=addressData.goonDatas.get(sidoLoc).goonName.indexOf(add[1]+" "+add[2]);
+            goon =Integer.toString(addressData.goonDatas.get(sidoLoc).goonMap.get(add[1]+" "+add[2]));
+            gu=Integer.toString(addressData.goonDatas.get(sidoLoc).guDatas.get(goonLoc).guMap.get(add[3]));
         }
+        else{
+            int goonLoc=addressData.goonDatas.get(sidoLoc).goonName.indexOf(add[1]);
+            goon =Integer.toString(addressData.goonDatas.get(sidoLoc).goonMap.get(add[1]));
+            gu=Integer.toString(addressData.goonDatas.get(sidoLoc).guDatas.get(goonLoc).guMap.get(add[2]));
+        }
+
+
+        Log.e("시군구코드: "," "+ sido+", "+goon+", "+gu );
         String tnStr=inputTN.getText().toString();
         CSurvey.add_list(plateView.getText().toString(),ckBox.isChecked()?null:tnStr,index ==2,points, la,lo,imageId,sido,goon,gu,etStr
                ,frameCh,gagakCh,jijuguCh);
 
+    }
+    //, 경기도 수원시 같이 구이름이 두개인게있음, (충북 청주시) (충남 천안) (전북 전주) (경북 포항) (경기 수원, 성남, 안양, 부천, 안산, 고양, 용인)
+    public boolean checkAdd(String add){
+        switch(add){
+            case "청주시": case "천안시":case "전주시":case "포항시":case "수원시":case "성남시":case "안양시":case "부천시":case "안산시":case "고양시":case "용인시":
+                return true;
+                default:
+                    return false;
+        }
+    }
+    public String shortToLong(String shortStr){
+        String longStr="";
+        switch(shortStr){
+            case "서울": longStr="서울특별시";break;
+            case "경기": longStr="경기도";break;
+            case "충남": longStr="충청남도";break;
+            case "충북": longStr="충청북도";break;
+            case "전남": longStr="전라남도";break;
+            case "전북": longStr="전라북도";break;
+            case "경남": longStr="경상남도";break;
+            case "경북": longStr="경상북도";break;
+            case "인천": longStr="인천광역시";break;
+            case "부산": longStr="부산광역시";break;
+            case "대구": longStr="대구광역시";break;
+            case "광주": longStr="광주광역시";break;
+            case "울산": longStr="울산광역시";break;
+            case "제주특별자치도": longStr="제주특별자치도";break;
+            case "강원": longStr="강원도";break;
+        }
+        return longStr;
     }
 }

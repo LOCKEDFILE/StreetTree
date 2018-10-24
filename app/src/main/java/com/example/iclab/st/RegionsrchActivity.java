@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 
 import cz.msebera.android.httpclient.Header;
 
+import static com.example.iclab.st.IntroActivity.addressData;
 import static com.example.iclab.st.NamesrchActivity.newCS;
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
 
@@ -47,6 +48,7 @@ public class RegionsrchActivity extends AppCompatActivity {
     String sidocode;
     String gooncode;
     String gucode; // 동 코드
+    int spin1,spin2;
     List<String> listName=new ArrayList<>();
     boolean ch1 = false, ch2 = false;
     @Override
@@ -75,92 +77,21 @@ public class RegionsrchActivity extends AppCompatActivity {
             }
         });
 
-        try {
-            URL url = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/top.json.txt");
-            ArrayList<String> sidoList = new ArrayList<String>();
-
-            URLAsyncTask sidoTask = new URLAsyncTask();
-
-            sidoTask.execute(url);
-
-            // sidoTask에서 처리된 값을 가져와서 key값 나열
-            sidoMap = sidoTask.get();
-
-            Set keySet = sidoMap.keySet();
-
-            Iterator keyIterator = keySet.iterator();
-
-            sidoList.add("선택");
-
-            while(keyIterator.hasNext()) {
-                sidoList.add(keyIterator.next()+"");
-            }
-
-            // sido Spinner에 데이터 저장
-            ArrayAdapter<String> sidoAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, sidoList);
-
-            top.setAdapter(sidoAdapter);
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
+        // sido Spinner에 데이터 저장
+        ArrayAdapter<String> sidoAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, addressData.name);    //sidoList);
+        top.setAdapter(sidoAdapter);
 
 
         // 시도 부분 spinner 클릭했을 때
         top.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
+                spin1=index;
+                sidocode=Integer.toString(addressData.code.get(spin1));
+                // spinner에 값 저장
+                ArrayAdapter<String> goonAdapter = new ArrayAdapter<String>(RegionsrchActivity.this, R.layout.support_simple_spinner_dropdown_item, addressData.goonDatas.get(spin1).goonName);
 
-                URLAsyncTask goonTask = new URLAsyncTask();
-                URL goonURL = null;
-                try {
-                    ArrayList<String> goonList = new ArrayList<String>();
-
-                    sidocode = sidoMap.get(top.getItemAtPosition(index));
-
-                    if (top.getItemAtPosition(index).equals("선택"))
-                    {
-                        goonList.add("선택");
-                        // spinner에 값 저장
-                        ArrayAdapter<String> goonAdapter = new ArrayAdapter<String>(RegionsrchActivity.this, R.layout.support_simple_spinner_dropdown_item, goonList);
-                        sidocode = null;
-                        mid.setAdapter(goonAdapter);
-                        return;
-                    }
-
-                    goonURL = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/mdl." + sidoMap.get(top.getItemAtPosition(index) + "") + ".json.txt");
-
-                    goonTask.execute(goonURL);
-
-                    // goonTask에서 처리된 값을 가져와서 key값 나열
-                    goonMap = goonTask.get();
-
-                    Set goonKeySet = goonMap.keySet();
-
-                    Iterator goonKeyIterator = goonKeySet.iterator();
-
-                    goonList.add("선택");
-
-                    while(goonKeyIterator.hasNext()){
-                        goonList.add(goonKeyIterator.next()+"");
-                    }
-
-                    // spinner에 값 저장
-                    ArrayAdapter<String> goonAdapter = new ArrayAdapter<String>(RegionsrchActivity.this, R.layout.support_simple_spinner_dropdown_item, goonList);
-
-                    mid.setAdapter(goonAdapter);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                mid.setAdapter(goonAdapter);
             }
 
             @Override
@@ -174,55 +105,12 @@ public class RegionsrchActivity extends AppCompatActivity {
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
-                URLAsyncTask guTask = new URLAsyncTask();
-                URL guURL = null;
-                try {
-                    ArrayList<String> guList = new ArrayList<String>();
-                    if(sidocode != null)
-                        gooncode = goonMap.get(mid.getItemAtPosition(index));
-                    else
-                        gooncode = null;
+                // spinner에 값 저장
+                spin2=index;
+                gooncode=Integer.toString(addressData.goonDatas.get(spin1).goonCode.get(spin2));
+                ArrayAdapter<String> guAdapter = new ArrayAdapter<String>(RegionsrchActivity.this, R.layout.support_simple_spinner_dropdown_item, addressData.goonDatas.get(spin1).guDatas.get(spin2).guName);
 
-                    if (mid.getItemAtPosition(index).equals("선택"))
-                    {
-                        gooncode = null;
-                        guList.add("선택");
-                        // spinner에 값 저장
-                        ArrayAdapter<String> guAdapter = new ArrayAdapter<String>(RegionsrchActivity.this, R.layout.support_simple_spinner_dropdown_item, guList);
-
-                        leaf.setAdapter(guAdapter);
-                        return;
-                    }
-
-                    guURL = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/leaf." + goonMap.get(mid.getItemAtPosition(index) + "") + ".json.txt");
-
-                    guTask.execute(guURL);
-
-                    // guTask에서 처리된 값을 가져와서 key값 나열
-                    guMap = guTask.get();
-
-                    Set guKeySet = guMap.keySet();
-
-                    Iterator guKeyIterator = guKeySet.iterator();
-
-                    guList.add("선택");
-
-                    while(guKeyIterator.hasNext())
-                    {
-                        guList.add(guKeyIterator.next()+"");
-                    }
-
-                    // spinner에 값 저장
-                    ArrayAdapter<String> guAdapter = new ArrayAdapter<String>(RegionsrchActivity.this, R.layout.support_simple_spinner_dropdown_item, guList);
-
-                    leaf.setAdapter(guAdapter);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                leaf.setAdapter(guAdapter);
             }
 
             @Override
@@ -286,12 +174,7 @@ public class RegionsrchActivity extends AppCompatActivity {
         leaf.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (leaf.getItemAtPosition(i).equals("선택")) {
-                    gucode = null;
-                    return;
-                }
-                gucode = guMap.get(leaf.getItemAtPosition(i));
-
+                gucode =Integer.toString(addressData.goonDatas.get(spin1).guDatas.get(spin2).guCode.get(i));
             }
 
             @Override

@@ -7,6 +7,29 @@
     tools:context="com.example.iclab.st.CompleteActivity">
 
 
+    <Button
+        android:id="@+id/resultBtn2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="end"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/rounded_shape"
+        android:backgroundTint="@color/color_drakGray"
+        android:fontFamily="@font/godo"
+        android:text="상세"
+        android:textColor="@color/color_background"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.028"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -61,18 +84,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignEnd="@+id/extradataText"
-            android:layout_alignParentBottom="true"
             android:layout_alignRight="@+id/extradataText"
-            android:layout_marginBottom="12dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="end"
             android:layout_marginTop="12dp"
             android:layout_marginRight="20dp"
-            android:layout_gravity="end"
-            android:fontFamily="@font/godo"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/rounded_shape"
             android:backgroundTint="@color/color_drakGray"
+            android:fontFamily="@font/godo"
+            android:text="완료"
             android:textColor="@color/color_background"
-            android:textSize="18dp"
-            android:text="완료" />
+            android:textSize="18dp" />
 
     </LinearLayout>
 

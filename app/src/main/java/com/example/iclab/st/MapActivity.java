@@ -1,6 +1,7 @@
 package com.example.iclab.st;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
@@ -46,16 +49,16 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
     boolean isButtonVisible = false;
     double latitude;
     double longitude;
-//    static List<MapPOIItem> markerList = new ArrayList<MapPOIItem>();
-
+    static String addressStr="";
+    public static MapActivity mapActivity=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        mapActivity=this;
 
-        Log.e("onCreate","rrrrrss");
         final MapView mapView = new MapView(MapActivity.this);
 
         mapView.setDaumMapApiKey("e95ede72416f09346c75c0acb52472ed");
@@ -65,13 +68,11 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
         mapView.setMapViewEventListener(this);
 
 
-
-
         for (int i = 0; i < GCSurvey.list.size(); i++) {
             marker = new MapPOIItem();
             marker.setItemName("AKM");
             marker.setTag(0);
-            marker.setMapPoint( MapPoint.mapPointWithGeoCoord(  GCSurvey.list.get(i).latitude,GCSurvey.list.get(i).longitude));
+            marker.setMapPoint(MapPoint.mapPointWithGeoCoord(GCSurvey.list.get(i).latitude, GCSurvey.list.get(i).longitude));
             marker.setMarkerType(MapPOIItem.MarkerType.BluePin); // 기본으로 제공하는 BluePin 마커 모양.
             marker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin); // 마커를 클릭했을때, 기본으로 제공하는 RedPin 마커 모양.
             mapView.addPOIItem(marker);
@@ -83,11 +84,10 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
             @Override
             public void onClick(View view) {
                 moveMapViewCurrentPosition(mapView);
-
-
             }
         });
 
+        gpsButton.performClick();
         applyButton = findViewById(R.id.apply);
         cancelButton = findViewById(R.id.cancel);
 
@@ -126,27 +126,53 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
                 isButtonVisible = false;
             }
         });
-    }
 
+
+
+
+        moveMapViewCurrentPosition(mapView);// 현재위치로 시작1
+    }
+    static MapReverseGeoCoder.ReverseGeoCodingResultListener reverseGeoCodingResultListener=new MapReverseGeoCoder.ReverseGeoCodingResultListener() {
+        @Override
+        public void onReverseGeoCoderFoundAddress(MapReverseGeoCoder mapReverseGeoCoder, String s) {
+            Log.e("TEST", "  "+s);
+            addressStr=s;
+        }
+
+        @Override
+        public void onReverseGeoCoderFailedToFindAddress(MapReverseGeoCoder mapReverseGeoCoder) {
+
+        }
+    };
+    public static void getAddressName(double latitude,double longitude){// ex ) 서울 강북구 수유동 / 서울 종로구 부암동 . (시) (구) (동)  / 충남 아산시 도고면 와산리 / 충남 아산시 송악면 동화리
+        MapReverseGeoCoder reverseGeoCoder = new MapReverseGeoCoder("e95ede72416f09346c75c0acb52472ed",MapPoint.mapPointWithGeoCoord(latitude,longitude), reverseGeoCodingResultListener, mapActivity);
+        reverseGeoCoder.startFindingAddress();
+//        reverseGeoCoder.findAddressForMapPointSync("e95ede72416f09346c75c0acb52472ed",MapPoint.mapPointWithGeoCoord(latitude,longitude));
+    }
     @Override
     public void onMapViewInitialized(MapView mapView) {
-        Intent intent = getIntent();
-
-        final double beginLatitude = intent.getDoubleExtra("latitude", 36.770598f);
-        final double beginLongitude = intent.getDoubleExtra("longitude", 126.931647f);
-
-        for(int i=0;i<GCSurvey.list.size();i++) {
+        for (int i = 0; i < GCSurvey.list.size(); i++) {
             marker = new MapPOIItem();
             marker.setTag(0);
-            marker.setMapPoint( MapPoint.mapPointWithGeoCoord(  GCSurvey.list.get(i).latitude,GCSurvey.list.get(i).longitude));
+            marker.setMapPoint(MapPoint.mapPointWithGeoCoord(GCSurvey.list.get(i).latitude, GCSurvey.list.get(i).longitude));
             marker.setMarkerType(MapPOIItem.MarkerType.BluePin); // 기본으로 제공하는 BluePin 마커 모양.
             marker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin); // 마커를 클릭했을때, 기본으로 제공하는 RedPin 마커 모양.
-//            markerList.add(marker);
+            setCurrentPosition();
             mapView.addPOIItem(marker);
         }
 
-        mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(beginLatitude, beginLongitude), true);
-        setCurrentPosition();
+        latitude=37.566535f;
+        longitude=126.97796919999996f;
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 200, 1, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 200, 1, locationListener);
+            return;
+        }
+
+        mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(latitude, longitude), true);
+
     }
 
     public void moveMapViewCurrentPosition(MapView mapView) {
@@ -184,13 +210,11 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
 
     @Override
     public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint) {
-
     }
 
 
     @Override
     public void onMapViewZoomLevelChanged(MapView mapView, int i) {
-
     }
 
     @Override
@@ -203,30 +227,12 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
             marker.setMapPoint(mapPoint);
             marker.setMarkerType(MapPOIItem.MarkerType.BluePin); // 기본으로 제공하는 BluePin 마커 모양.
             marker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin); // 마커를 클릭했을때, 기본으로 제공하는 RedPin 마커 모양.
-
+            MapReverseGeoCoder reverseGeoCoder = new MapReverseGeoCoder("e95ede72416f09346c75c0acb52472ed",mapPoint, reverseGeoCodingResultListener, MapActivity.this);
+            reverseGeoCoder.startFindingAddress();
+            Toast.makeText(MapActivity.this,addressStr,Toast.LENGTH_LONG);
 //            markerList.add(marker);
 
             mapView.addPOIItem(marker);
-            //
-            double latitude = mapPoint.getMapPointGeoCoord().latitude;
-            double longitude = mapPoint.getMapPointGeoCoord().longitude;
-
-            Geocoder gCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-            Address a = null;
-            try {
-                a = gCoder.getFromLocation(latitude, longitude, 1).get(0);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            for (int i = 0; i <= a.getMaxAddressLineIndex(); i++)
-                Toast.makeText(getApplicationContext(),""+a.getAddressLine(i),Toast.LENGTH_LONG).show(); // 위치 정보 확인
-
-
-
-
-
-
-            //
             // 버튼 활성화
             applyButton.setVisibility(View.VISIBLE);
             cancelButton.setVisibility(View.VISIBLE);

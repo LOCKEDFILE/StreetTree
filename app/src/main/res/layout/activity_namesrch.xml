@@ -48,15 +48,15 @@
                 android:text="검색"/>
             </LinearLayout>
 
-            <ListView
-                android:id="@+id/hyunjangList2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/godo"
-                android:layout_marginTop="10dp"
-                android:layout_weight="1"
-                android:scrollbars="vertical"
-                android:background="@drawable/around_box"/>
+        <ListView
+            android:id="@+id/hyunjangList2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/around_box"
+            android:fontFamily="@font/godo"
+            android:scrollbars="vertical" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
