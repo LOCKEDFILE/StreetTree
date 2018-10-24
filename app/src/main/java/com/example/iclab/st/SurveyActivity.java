@@ -1,5 +1,4 @@
 package com.example.iclab.st;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -97,13 +96,14 @@ public class SurveyActivity extends AppCompatActivity {
     static ArrayList<String> frameId=new ArrayList<>();
     AlertDialog.Builder alt_bld;
     TextView plateView;
-    Boolean frameCh=false;
-    Boolean gagakCh=true;
-    Boolean jijuguCh=true;
+    boolean frameCh=false;
+    boolean gagakCh=true;
+    boolean jijuguCh=true;
     static String store ="";
     Button completeBtn;
     double latitude;
     double longitude;
+    boolean sujung=false;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,6 +177,7 @@ public class SurveyActivity extends AppCompatActivity {
                 }
             }
         });
+
 
         // 라디오버튼 제어(설치전, 설치후)
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -261,11 +262,12 @@ public class SurveyActivity extends AppCompatActivity {
         modifyBtn.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 RadioGroup frameRg;
+                sujung=true;
                 alt_bld = new AlertDialog.Builder(SurveyActivity.this);
                 alt_bld.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        store=plateView.getText().toString();
                     }
                 });
 
@@ -276,10 +278,14 @@ public class SurveyActivity extends AppCompatActivity {
                 sp1 = dialogView.findViewById(R.id.sp1);
                 sp2= dialogView.findViewById(R.id.sp2);
                 sp3= dialogView.findViewById(R.id.sp3);
+
+                // sp1.getItem 같은 뭔가 있는거 확인
+	// store = sp1.getItem(0).getText() +g;
+
                 sp1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
-                        str1=list1.get(index);
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int ind, long l) {
+                        str1=list1.get(ind);
 
                         sp2.invalidate();
                         list2.clear();
@@ -310,8 +316,8 @@ public class SurveyActivity extends AppCompatActivity {
 
                 sp2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
-                        str2=str1+"-"+list2.get(index);
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int ind, long l) {
+                        str2=str1+"-"+list2.get(ind);
                         plateView.setText(str2);
                         list3.clear();
 //                completeBtn.setEnabled(true);
@@ -358,7 +364,8 @@ public class SurveyActivity extends AppCompatActivity {
 
                     @Override
                     public void onNothingSelected(AdapterView<?> adapterView) {
-
+                        plateView.setText(str2);
+                        store = plateView.getText().toString();
                     }
                 });
                 frameRg=dialogView.findViewById(R.id.group);
@@ -381,97 +388,15 @@ public class SurveyActivity extends AppCompatActivity {
                 sp1.setAdapter(listAdap1);
                 alt_bld.show();
             }
+
+
         });
 
-//        sp1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
-//                str1=list1.get(index);
-//
-//                sp2.invalidate();
-//                list2.clear();
-//                for(int i=0;i<plateId.size();i++){
-//                    int j=plateId.get(i).indexOf("-");
-//                    if(str1.equals(plateId.get(i).substring(0,j))){
-//                        int k=plateId.get(i).substring(j+1).indexOf("-");
-//                        if(!list2.contains(plateId.get(i).substring(j+1,k+j+1))) {
-//                            list2.add(plateId.get(i).substring(j + 1, k+j+1));
-//                        }
-//                    }
-//
-//                }
-//
-//                Collections.sort(list2);
-//                ArrayAdapter<String> listAdap2 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list2);
-//                sp2.setAdapter(listAdap2);
-//
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//            }
-//        });
-//
-//
-//
-//        sp2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
-//                str2=str1+"-"+list2.get(index);
-//                plateView.setText(str2);
-//                list3.clear();
-////                completeBtn.setEnabled(true);
-//                store = plateView.getText().toString();
-//
-//                for(int i=0;i<plateId.size();i++){
-//                    if(plateId.get(i).contains(str2)){
-//                        int j = plateId.get(i).lastIndexOf("-");
-//                        if(!list3.contains(plateId.get(i).substring(j+1))){
-//                            list3.add(plateId.get(i).substring(j+1));
-//                        }
-//                    }
-//                }
-//                Collections.sort(list3);
-//                list3.add(0,"없음");
-//                ArrayAdapter<String> listAdap3 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list3);
-//                sp3.setAdapter(listAdap3);
-//
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//            }
-//        });
-//
-//        // plateView 에 출력
-//        sp3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int ind, long l) {
-////                completeBtn.setEnabled(true);
-//                if(ind==0){
-//                    plateView.setText(str2);
-//                    startBtn.setVisibility(View.VISIBLE);
-////                    GCSurvey.list.get(GCSurvey.list.size()-1).plate_id=str2+"-"+list3.get(ind);
-//                }
-//                else{
-//                    plateView.setText(str2+"-"+list3.get(ind));
-//                    store = plateView.getText().toString();
-//                    startBtn.setVisibility(View.INVISIBLE);
-////                    GCSurvey.list.get(GCSurvey.list.size()-1).plate_id=str2;
-//                }
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//            }
-//        });
         // 다음 버튼 누르면 맵 화면으로 전환
         nextBtn.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                if (store.length() != 0) {
+                store = plateView.getText().toString();
+                if (!store.equals("선택한 보호판")) {
                     Intent intent = new Intent(getApplicationContext(), MapActivity.class);//  테스트로 인해 잠시 변경
                     intent.putExtra("latitude", latitude);
                     intent.putExtra("longitude", longitude);
@@ -502,7 +427,8 @@ public class SurveyActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 if(event.getAction()==MotionEvent.ACTION_UP) {
-                    if (store.length() != 0) {
+                    store = plateView.getText().toString();
+                    if (!store.equals("선택한 보호판")) {
                         Intent intent = new Intent(getApplicationContext(), CompleteActivity.class);
                         make_list(latitude, longitude); // 저장
                         startActivity(intent);
@@ -572,34 +498,6 @@ public class SurveyActivity extends AppCompatActivity {
     {
         for(int k=0;index==2?k<4:k<3;k++)
             points[k]=inputP[k].getText().toString();
-//        Geocoder gCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-//        List<Address> addr = null;
-//
-//        try {
-//            addr = gCoder.getFromLocation(la, lo, 1);
-//            Address a = addr.get(0);
-////            String s[];
-//
-//            Log.e("주소 ",a+" ");
-//            for (int i = 0; i <= a.getMaxAddressLineIndex(); i++) {
-//                FindCode fCode= new FindCode();
-//                //if(a.getFeatureName())
-//                String loc=a.getLocality();
-//                if(a.getSubLocality()!=null&&!loc.contains("서울")) {
-//                    loc += a.getSubLocality();
-//                }
-//                else if(loc!=null&&loc.contains("서울"))
-//                    loc=a.getSubLocality();
-//                if(a.getFeatureName().equals("시청역"))
-//                    goon=fCode.kmaJson("중구");
-//                else
-//                    goon=fCode.kmaJson(loc);// 군
-//                sido=goon.substring(0,2);// 시
-//                gu=fCode.finder(a.getThoroughfare(),goon);// 구
-//             }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
         getAddressName(latitude,longitude);
         //  시 군 구 바꾸기
@@ -622,9 +520,9 @@ public class SurveyActivity extends AppCompatActivity {
         }
 
 
-        Log.e("시군구코드: "," "+ sido+", "+goon+", "+gu );
+        Log.e("시군구코드: "," "+ sido+", "+goon+", "+gu +" store : "+store);
         String tnStr=inputTN.getText().toString();
-        CSurvey.add_list(plateView.getText().toString(),ckBox.isChecked()?null:tnStr,index ==2,points, la,lo,imageId,sido,goon,gu,etStr
+        CSurvey.add_list(store,ckBox.isChecked()?null:tnStr,index ==2,points, la,lo,imageId,sido,goon,gu,etStr
                ,frameCh,gagakCh,jijuguCh);
 
     }

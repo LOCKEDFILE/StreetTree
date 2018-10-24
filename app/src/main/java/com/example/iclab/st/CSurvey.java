@@ -39,11 +39,12 @@ public class CSurvey {
     ArrayList<SurveyList> list= new ArrayList<>();// 데이터 저장 리스트
 
     //
-    public static void add_list(String plate, String tree_num, boolean is_installed, String points[],double la, double lo,String imageId,String si,String goon,String gu,String etStr,
-                                Boolean frameCh,Boolean gagak,Boolean jiju)
+    public static void add_list(String plate_id, String tree_num, boolean is_installed, String points[],double la, double lo,
+                                String imageId,String si,String goon,String gu,String etStr,
+                                boolean frameCh,boolean gagak,boolean jiju)
     {
         SurveyList tmp = new SurveyList();
-        tmp.plate_id = plate;
+        tmp.plate_id = plate_id;
         tmp.treeNumber = tree_num;
         tmp.isInstalled = is_installed;
         tmp.points = points;
@@ -104,9 +105,9 @@ class  SurveyList {
     public String memo="";
     public String measure_id="";
 
-    public Boolean frameCheck;// 받침틀 납품여부
-    public Boolean gagakCheck;// 가각 여부
-    public Boolean jijuguCheck;// 지주구 여부
+    public boolean frameCheck;// 받침틀 납품여부
+    public boolean gagakCheck;// 가각 여부
+    public boolean jijuguCheck;// 지주구 여부
 
     public SurveyList() {
         points = new String[4];
@@ -118,6 +119,7 @@ class  SurveyList {
         points = new String[4];
         points[3] = "";
         try {
+            Log.e("OBJECT  ",JObject+"");
             sequenceNumber = JObject.getInt("sequenceNumber");
             JSONObject tmp = JObject.getJSONObject("coordinates");
             latitude = tmp.getDouble("latitude");
@@ -126,11 +128,10 @@ class  SurveyList {
             sido = tmp.getString("siCode");
             goon = tmp.getString("guCode");
             gu = tmp.getString("dongCode");
-
             plate_id = JObject.getString("plate_id");
             treeNumber = JObject.getString("treeNumber");
             isInstalled = JObject.getBoolean("isInstalled");
-
+            frameCheck=JObject.getBoolean("frameCheck");
             for(int i=0;i< JObject.getJSONArray("points").length();i++)
                 points[i] = JObject.getJSONArray("points").getString(i);
             rootImageId = JObject.getString("rootImageUrl");

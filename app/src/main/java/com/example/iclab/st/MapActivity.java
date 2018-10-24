@@ -229,10 +229,11 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
             marker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin); // 마커를 클릭했을때, 기본으로 제공하는 RedPin 마커 모양.
             MapReverseGeoCoder reverseGeoCoder = new MapReverseGeoCoder("e95ede72416f09346c75c0acb52472ed",mapPoint, reverseGeoCodingResultListener, MapActivity.this);
             reverseGeoCoder.startFindingAddress();
-            Toast.makeText(MapActivity.this,addressStr,Toast.LENGTH_LONG);
+
 //            markerList.add(marker);
 
             mapView.addPOIItem(marker);
+            Toast.makeText(MapActivity.this,addressStr,Toast.LENGTH_LONG).show();
             // 버튼 활성화
             applyButton.setVisibility(View.VISIBLE);
             cancelButton.setVisibility(View.VISIBLE);

@@ -95,6 +95,7 @@ public class CompleteActivity extends AppCompatActivity{
 
         for(int i=0;i<GCSurvey.list.size();i++)
         {
+            Log.e("왜안뜨냐", " "+GCSurvey.list.get(i).plate_id);
             if(!list.contains(GCSurvey.list.get(i).plate_id))
             {
                 list.add(GCSurvey.list.get(i).plate_id);
@@ -113,6 +114,7 @@ public class CompleteActivity extends AppCompatActivity{
             {
                 int ch =-1;
                 for(int k=0;k<plateId.size();k++) {
+
                     if(plateId.get(k).contains(GCSurvey.list.get(i).plate_id))
                         ch=k;
                 }
@@ -171,7 +173,8 @@ public class CompleteActivity extends AppCompatActivity{
                 SurveyList.count = 1;
 
                 StringEntity entity = new StringEntity(new Gson().toJson(GCSurvey), "utf-8");
-                if(is_appended == false)
+
+                if(!is_appended)
                 {
                     client.post(CompleteActivity.this, "http://220.69.209.49/measureset/new", entity, "application/json", new AsyncHttpResponseHandler(){
                         @Override
@@ -183,8 +186,7 @@ public class CompleteActivity extends AppCompatActivity{
                             // 서버 응답 없음
                         }
                     });
-                }else
-                {
+                }else {
                     client.put(CompleteActivity.this, "http://220.69.209.49/measureset/"+GCSurvey.measureset_id, entity, "application/json", new AsyncHttpResponseHandler(){
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] response) {
@@ -196,9 +198,9 @@ public class CompleteActivity extends AppCompatActivity{
                             // 서버 응답 없음
                         }
                     });
-                    Log.e("Entity"," "+new Gson().toJson(GCSurvey));
-                }
 
+                }
+                Log.e("Entity"," "+new Gson().toJson(GCSurvey));
                 extraData="";
                 is_appended = false;
                 SaveSharedPreference.setUserData(CompleteActivity.this, "");
