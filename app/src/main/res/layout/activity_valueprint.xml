@@ -25,6 +25,12 @@
         android:layout_height="wrap_content"
         android:text="삽입" />
 
+    <Button
+        android:id="@+id/list_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="상세" />
+
     <ListView
         android:id="@+id/valueList"
         android:layout_width="match_parent"
