@@ -43,6 +43,7 @@ import cz.msebera.android.httpclient.entity.mime.content.FileBody;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 
 
+import static com.example.iclab.st.NamesrchActivity.checkAdd;
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
 import static com.example.iclab.st.SurveyActivity.frameId;
 import static com.example.iclab.st.SurveyActivity.plateId;
@@ -110,7 +111,7 @@ public class CompleteActivity extends AppCompatActivity{
                         ch=k;
                     list1.set(ch,list1.get(ch)+1);
             }
-            if(GCSurvey.list.get(i).frameCheck)
+            if(GCSurvey.list.get(i).framecheck)
             {
                 int ch =-1;
                 for(int k=0;k<plateId.size();k++) {
@@ -171,9 +172,13 @@ public class CompleteActivity extends AppCompatActivity{
 //                MapActivity.markerList.clear();
                 // 카운트 초기화
                 SurveyList.count = 1;
-
-                StringEntity entity = new StringEntity(new Gson().toJson(GCSurvey), "utf-8");
-
+                StringEntity entity;
+                if(checkAdd) {
+                    SurveyList tmp=GCSurvey.list.get(GCSurvey.list.size()-1);
+                    GCSurvey.list.clear();
+                    GCSurvey.list.add(tmp);
+                }
+                entity = new StringEntity(new Gson().toJson(GCSurvey), "utf-8");
                 if(!is_appended)
                 {
                     client.post(CompleteActivity.this, "http://220.69.209.49/measureset/new", entity, "application/json", new AsyncHttpResponseHandler(){
@@ -205,6 +210,7 @@ public class CompleteActivity extends AppCompatActivity{
                 is_appended = false;
                 SaveSharedPreference.setUserData(CompleteActivity.this, "");
                 GCSurvey.list.clear();// 전송 완료후 데이터 초기화
+                checkAdd=false;
                 Intent intent = new Intent(getApplicationContext(), FunctionActivity.class);
                 startActivity(intent);
                 finish();

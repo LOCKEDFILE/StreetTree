@@ -55,7 +55,7 @@ public class CSurvey {
         tmp.goon=goon;
         tmp.gu=gu;
         tmp.memo=etStr;
-        tmp.frameCheck=frameCh;
+        tmp.framecheck=frameCh;
         tmp.gagakCheck=gagak;
         tmp.jijuguCheck=jiju;
 
@@ -105,7 +105,7 @@ class  SurveyList {
     public String memo="";
     public String measure_id="";
 
-    public boolean frameCheck;// 받침틀 납품여부
+    public boolean framecheck;// 받침틀 납품여부
     public boolean gagakCheck;// 가각 여부
     public boolean jijuguCheck;// 지주구 여부
 
@@ -128,10 +128,11 @@ class  SurveyList {
             sido = tmp.getString("siCode");
             goon = tmp.getString("guCode");
             gu = tmp.getString("dongCode");
-            plate_id = JObject.getString("plate_id");
+            JSONObject plate=JObject.getJSONObject("plate");
+            plate_id = plate.getString("plate_id");
             treeNumber = JObject.getString("treeNumber");
             isInstalled = JObject.getBoolean("isInstalled");
-            frameCheck=JObject.getBoolean("frameCheck");
+            framecheck=JObject.getBoolean("framecheck");
             for(int i=0;i< JObject.getJSONArray("points").length();i++)
                 points[i] = JObject.getJSONArray("points").getString(i);
             rootImageId = JObject.getString("rootImageUrl");

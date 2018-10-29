@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 import cz.msebera.android.httpclient.Header;
 
 import static com.example.iclab.st.IntroActivity.addressData;
+import static com.example.iclab.st.NamesrchActivity.checkAdd;
 import static com.example.iclab.st.NamesrchActivity.newCS;
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
 
@@ -150,6 +151,9 @@ public class RegionsrchActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                         super.onSuccess(statusCode, headers, response);
+
+                        checkAdd=true;
+
                         newCS.clear();
                         for(int i =0;i<response.length();i++) {
                             try {

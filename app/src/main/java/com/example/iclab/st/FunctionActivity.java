@@ -140,7 +140,7 @@ public class FunctionActivity extends AppCompatActivity {
                 list.isInstalled = object.getBoolean("isInstalled");
                 list.treeLocation= object.getString("treeLocation");
                 list.memo = object.getString("memo");
-                list.frameCheck=object.getBoolean("frameCheck");;
+                list.framecheck=object.getBoolean("frameCheck");;
                 list.gagakCheck=object.getBoolean("gagakCheck");;
                 list.jijuguCheck=object.getBoolean("jijuguCheck");;
                 for(int k=0;k< object.getJSONArray("points").length();k++)

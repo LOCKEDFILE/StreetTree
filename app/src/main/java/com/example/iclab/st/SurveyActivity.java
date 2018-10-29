@@ -233,16 +233,21 @@ public class SurveyActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);
+                Log.e("LENGTH", "  "+response.length());
                 for(int i=0;i<response.length();i++) {
                     try {
                         JSONObject object =response.getJSONObject(i);
+//                        Log.e("PLATE",object.getString("plate_id"));
                         plateId.add(object.getString("plate_id"));
+//                        Log.d("PLATE_id",plateId.get(plateId.size()-1));
                         object=object.getJSONObject("frame");
                         frameId.add(object.getString("frame_id"));
 
-                        int ind=plateId.get(i).indexOf("-");
-                        if(!list1.contains(plateId.get(i).substring(0,ind)))
-                            list1.add(plateId.get(i).substring(0,ind));
+                        String[] splitID=plateId.get(i).split("-");
+                        if(!list1.contains(splitID[0])){
+                            list1.add(splitID[0]);
+                            Log.e("list 1","  "+splitID[0]);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -252,7 +257,7 @@ public class SurveyActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers,String s, Throwable throwable) {
                 super.onFailure(statusCode, headers,s, throwable);
-                Log.e("Test","실패 "+statusCode);
+                Log.e("Error(plate)","실패 "+statusCode);
 
             }
         });
@@ -289,15 +294,14 @@ public class SurveyActivity extends AppCompatActivity {
 
                         sp2.invalidate();
                         list2.clear();
-                        for(int i=0;i<plateId.size();i++){
-                            int j=plateId.get(i).indexOf("-");
-                            if(str1.equals(plateId.get(i).substring(0,j))){
-                                int k=plateId.get(i).substring(j+1).indexOf("-");
-                                if(!list2.contains(plateId.get(i).substring(j+1,k+j+1))) {
-                                    list2.add(plateId.get(i).substring(j + 1, k+j+1));
+                        for(int i=0;i<plateId.size();i++) {
+                            String[] splitID = plateId.get(i).split("-");
+                            if (plateId.get(i).contains(list1.get(ind))) {
+                                if(!list2.contains(splitID[1])) {
+                                    list2.add(splitID[1]);
+                                    Log.e("list  2"," "+splitID[1]);
                                 }
                             }
-
                         }
 
                         Collections.sort(list2);
@@ -323,11 +327,14 @@ public class SurveyActivity extends AppCompatActivity {
 //                completeBtn.setEnabled(true);
                         store = plateView.getText().toString();
 
-                        for(int i=0;i<plateId.size();i++){
-                            if(plateId.get(i).contains(str2)){
-                                int j = plateId.get(i).lastIndexOf("-");
-                                if(!list3.contains(plateId.get(i).substring(j+1))){
-                                    list3.add(plateId.get(i).substring(j+1));
+                        for(int i=0;i<plateId.size();i++) {
+                            String[] splitID = plateId.get(i).split("-");
+                            if(plateId.get(i).equals(str2))
+                                continue;
+                            else if (plateId.get(i).contains(str2)) {
+                                if(!list3.contains(splitID[2])) {
+                                    list3.add(splitID[2]);
+                                    Log.e("list  3"," "+splitID[2]);
                                 }
                             }
                         }

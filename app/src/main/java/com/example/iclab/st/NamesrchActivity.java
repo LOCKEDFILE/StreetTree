@@ -42,6 +42,7 @@ public class NamesrchActivity extends AppCompatActivity {
     static ArrayList<CSurvey> newCS = new ArrayList<>();
     List<String> listName=new ArrayList<>();
     int num;
+    static boolean checkAdd=false;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -85,7 +86,7 @@ public class NamesrchActivity extends AppCompatActivity {
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response)  {
                         super.onSuccess(statusCode, headers, response);
                         Toast.makeText(getApplicationContext(), "검색 결과", Toast.LENGTH_SHORT).show();
-
+                        checkAdd=true;
                         newCS.clear();
                         for (int i = 0; i < response.length(); i++)
                         {
