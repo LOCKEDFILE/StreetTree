@@ -114,6 +114,7 @@ public class RootActivity extends AppCompatActivity {
         findViewById(R.id.savePicture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "사진 저장 중...", Toast.LENGTH_SHORT).show();
                 if(photoFile==null){
                     imageId=null;
                     Toast.makeText(getApplicationContext(), "사진 없음", Toast.LENGTH_SHORT).show();
@@ -121,7 +122,7 @@ public class RootActivity extends AppCompatActivity {
                     final AsyncHttpClient client = new AsyncHttpClient();
                     client.setCookieStore(new PersistentCookieStore(RootActivity.this));
 
-                    Toast.makeText(getApplicationContext(), "사진 저장 중...", Toast.LENGTH_SHORT).show();
+
                     View rootView = getWindow().getDecorView();
                     screenShot = ScreenShot(rootView);
 
@@ -131,7 +132,7 @@ public class RootActivity extends AppCompatActivity {
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    client.post(RootActivity.this,"http://220.69.209.49/upload", params, new JsonHttpResponseHandler(){
+                    client.post(RootActivity.this,"http://183.96.177.81:8090/upload", params, new JsonHttpResponseHandler(){
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             super.onSuccess(statusCode, headers, response);

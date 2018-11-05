@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                 RequestParams params = new RequestParams();
                 params.put("id", userID);
                 params.put("pw", userPassword);
-                client.post(LoginActivity.this,"http://220.69.209.49/login", params,new JsonHttpResponseHandler(){
+                client.post(LoginActivity.this,"http://183.96.177.81:8090/login", params,new JsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         super.onSuccess(statusCode, headers, response);

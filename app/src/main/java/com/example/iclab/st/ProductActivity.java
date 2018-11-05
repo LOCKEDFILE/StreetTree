@@ -35,7 +35,7 @@ import cz.msebera.android.httpclient.Header;
 public class ProductActivity extends AppCompatActivity {
     int ind;
     int page = 0;
-    File newfile = new File(Environment.getExternalStorageDirectory(),"Test.pdf");
+    File newfile;
     ArrayAdapter<String> listAdapter2 = null;
     ArrayAdapter<String> listAdapter = null;
     String attachmentUrl=null;
@@ -67,7 +67,7 @@ public class ProductActivity extends AppCompatActivity {
         final AsyncHttpClient client = new AsyncHttpClient();
         client.setCookieStore(new PersistentCookieStore(ProductActivity.this));
 
-        client.get(ProductActivity.this, "http://220.69.209.49/plates", new JsonHttpResponseHandler() {
+        client.get(ProductActivity.this, "http://183.96.177.81:8090/plates", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);
@@ -76,13 +76,27 @@ public class ProductActivity extends AppCompatActivity {
                     try {
                         JSONObject object = response.getJSONObject(i);
                         String plateId = object.getString("plate_id");
-                        listName0.add(plateId);
-                        attach.add(object.getString("attachmentUrl"));
-                        ind = plateId.lastIndexOf("-");
 
-                        if (!listName1.contains(plateId.substring(0, ind)))
-                            listName1.add(plateId.substring(0, ind));
+                        ///
 
+//                        ///
+//                        String[] splitID=plateId.split("-");
+//                        if(splitID.length>2){
+//                            if (!listName1.contains(splitID[0]+"-"+splitID[1])) {
+//                                listName1.add(splitID[0]+"-"+splitID[1]));
+//                                attach.add(object.getString("attachmentUrl"));
+//                            }
+//                        }
+//                        else{
+                        String[] splitID=plateId.split("-");
+                        if(splitID.length>2) {
+                            listName0.add(plateId);
+                            ind = plateId.lastIndexOf("-");
+                            if (!listName1.contains(plateId.substring(0, ind))) {
+                                listName1.add(plateId.substring(0, ind));
+                                attach.add(object.getString("attachmentUrl"));
+                            }
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -138,12 +152,14 @@ public class ProductActivity extends AppCompatActivity {
                     if(attachmentUrl!=null) {
                         client.setCookieStore(a);
                         client.setURLEncodingEnabled(false);
-                            client.get("http://220.69.209.49"+attachmentUrl, new FileAsyncHttpResponseHandler(ProductActivity.this) {
+                            client.get("http://183.96.177.81:8090"+attachmentUrl, new FileAsyncHttpResponseHandler(ProductActivity.this) {
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, File response) {
                                 if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                                     FileOutputStream os;
                                     try {
+                                        newfile = new File(Environment.getExternalStorageDirectory(),"Test.pdf");
+
                                         os = new FileOutputStream(newfile);
                                         os.write(fileToBinary(response));
                                         os.close();

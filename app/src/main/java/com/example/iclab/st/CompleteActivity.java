@@ -181,18 +181,21 @@ public class CompleteActivity extends AppCompatActivity{
                 entity = new StringEntity(new Gson().toJson(GCSurvey), "utf-8");
                 if(!is_appended)
                 {
-                    client.post(CompleteActivity.this, "http://220.69.209.49/measureset/new", entity, "application/json", new AsyncHttpResponseHandler(){
+                    client.post(CompleteActivity.this, "http://183.96.177.81:8090/measureset/new", entity, "application/json", new AsyncHttpResponseHandler(){
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                             // 서버 연결
+                            Log.e("SUc ::: ", " "+ statusCode);
                         }
                         @Override
                         public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
                             // 서버 응답 없음
+                            Log.e("ERROR ::: ", " "+ statusCode);
                         }
                     });
+
                 }else {
-                    client.put(CompleteActivity.this, "http://220.69.209.49/measureset/"+GCSurvey.measureset_id, entity, "application/json", new AsyncHttpResponseHandler(){
+                    client.put(CompleteActivity.this, "http://183.96.177.81:8090/measureset/"+GCSurvey.measureset_id, entity, "application/json", new AsyncHttpResponseHandler(){
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                             // 서버 연결

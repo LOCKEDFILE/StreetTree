@@ -112,7 +112,12 @@ public class NewplaceActivity extends AppCompatActivity {
             public void onClick(View v) {
                 GCSurvey.siteName = inputHyunjang.getText().toString(); // 데이터저장
                 GCSurvey.createdAt = nowDate;
+                GCSurvey.deliveryTarget=level;
+                GCSurvey.deliveryDate=displayDate.getText().toString();
+                GCSurvey.differenceValue=inputDefference.getText().toString();
                 GCSurvey.clientName = inputBalju.getText().toString();
+                GCSurvey.salespersonName=inputMarketingname.getText().toString();
+
 
               Intent intent = new Intent(getApplicationContext(), MapActivity.class); // 원래 , 맵으로이동이지만 잠시 테스트 하기 위해
 //                Intent intent = new Intent(getApplicationContext(), SurveyActivity.class); // 잠시 테스트하기 위해 변경

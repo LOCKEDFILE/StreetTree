@@ -18,7 +18,7 @@ import cz.msebera.android.httpclient.entity.ByteArrayEntity;
 import static android.content.Context.JOB_SCHEDULER_SERVICE;
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
 
-// static 지우고
+
 public class CSurvey {
     // users
     public String id; // 로그인 ID
@@ -128,19 +128,18 @@ class  SurveyList {
             sido = tmp.getString("siCode");
             goon = tmp.getString("guCode");
             gu = tmp.getString("dongCode");
-            JSONObject plate=JObject.getJSONObject("plate");
-            plate_id = plate.getString("plate_id");
+
             treeNumber = JObject.getString("treeNumber");
             isInstalled = JObject.getBoolean("isInstalled");
-            framecheck=JObject.getBoolean("framecheck");
+            framecheck=JObject.getString("framecheck")=="1"?true:false;
             for(int i=0;i< JObject.getJSONArray("points").length();i++)
                 points[i] = JObject.getJSONArray("points").getString(i);
             rootImageId = JObject.getString("rootImageUrl");
-
             treeLocation  = JObject.getString("treeLocation");
             memo = JObject.getString("memo");
-
             measure_id=JObject.getString("measure_id");
+            JSONObject plate=JObject.getJSONObject("plate");
+            plate_id = plate.getString("plate_id");
         } catch (JSONException e) {
             e.printStackTrace();
         }

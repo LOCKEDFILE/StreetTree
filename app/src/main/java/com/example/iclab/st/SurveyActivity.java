@@ -104,6 +104,7 @@ public class SurveyActivity extends AppCompatActivity {
     double latitude;
     double longitude;
     boolean sujung=false;
+    AlertDialog alert;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +127,11 @@ public class SurveyActivity extends AppCompatActivity {
         //
         plateView=findViewById(R.id.selectPP);
 
+
+        //
+
+
+        //
         if(store.length() != 0)
             plateView.setText(store);
 
@@ -229,24 +235,25 @@ public class SurveyActivity extends AppCompatActivity {
 
         final AsyncHttpClient client=new AsyncHttpClient();
         client.setCookieStore(new PersistentCookieStore(SurveyActivity.this));
-        client.get(SurveyActivity.this,"http://220.69.209.49/plates",new JsonHttpResponseHandler(){
+        client.get(SurveyActivity.this,"http://183.96.177.81:8090/plates",new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);
-                Log.e("LENGTH", "  "+response.length());
+                Log.e("RESPONSE :: :: ", "  "+response);
                 for(int i=0;i<response.length();i++) {
                     try {
                         JSONObject object =response.getJSONObject(i);
 //                        Log.e("PLATE",object.getString("plate_id"));
                         plateId.add(object.getString("plate_id"));
 //                        Log.d("PLATE_id",plateId.get(plateId.size()-1));
-                        object=object.getJSONObject("frame");
-                        frameId.add(object.getString("frame_id"));
+                        JSONObject frameobject=object.getJSONObject("frame");
+//                        Log.e("FRAMEOBJ::::"," "+frameobject);
+                        frameId.add(frameobject.getString("frame_id"));
 
                         String[] splitID=plateId.get(i).split("-");
                         if(!list1.contains(splitID[0])){
                             list1.add(splitID[0]);
-                            Log.e("list 1","  "+splitID[0]);
+//                            Log.e("list 1","  "+splitID[0]);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -452,37 +459,42 @@ public class SurveyActivity extends AppCompatActivity {
 
         // 메모 버튼
 
+        et=new EditText(getApplicationContext());
+
         memobutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder alt_bld = new AlertDialog.Builder(SurveyActivity.this);
-
-                et=new EditText(getApplicationContext());
-                et.setHint("여기에 메모를 입력하세요.");
-//                et.setMaxEms(100);
-                alt_bld.setView(et);
-                alt_bld.setCancelable(
-                        false).setPositiveButton("완료",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                etStr=et.getText().toString();
-//                                Log.e("타이핑",GCSurvey.list.get(GCSurvey.list.size()-1).memo);
-                            }
-                        }).setNegativeButton("취소",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-
-                            }
-                        });
-                AlertDialog alert = alt_bld.create();
-                alert.setTitle("메모 기능 (100자 제한)");
-                alert.show();
-
-
-
+                showDialog();
             }
         });
 
+    }
+    public void showDialog(){
+        AlertDialog.Builder alt_bld = new AlertDialog.Builder(SurveyActivity.this);
+        et.setHint("여기에 메모를 입력하세요.");
+        if(etStr!="")
+            et.setText(etStr);
+//                et.setMaxEms(100);
+
+        alt_bld.setPositiveButton("완료", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                etStr=et.getText().toString();
+                alert.dismiss();
+            }
+        });
+        alt_bld.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                alert.dismiss();
+            }
+        });
+        if(et.getParent()!=null)
+            ((ViewGroup)et.getParent()).removeView(et);
+        alt_bld.setView(et);
+        alert = alt_bld.create();
+        alert.setTitle("메모 기능 (100자 제한)");
+        alert.show();
     }
 
     // 설치 전(3군데) - 설치 후(4군데)에 대한 view 전환
@@ -529,6 +541,7 @@ public class SurveyActivity extends AppCompatActivity {
 
         Log.e("시군구코드: "," "+ sido+", "+goon+", "+gu +" store : "+store);
         String tnStr=inputTN.getText().toString();
+        Log.e("메모 :" , etStr);
         CSurvey.add_list(store,ckBox.isChecked()?null:tnStr,index ==2,points, la,lo,imageId,sido,goon,gu,etStr
                ,frameCh,gagakCh,jijuguCh);
 

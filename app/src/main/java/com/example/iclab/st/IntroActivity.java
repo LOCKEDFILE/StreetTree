@@ -55,6 +55,8 @@ public class IntroActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         // Show the splash screen
 //
 //        URL url;

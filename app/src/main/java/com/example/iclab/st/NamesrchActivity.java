@@ -81,7 +81,7 @@ public class NamesrchActivity extends AppCompatActivity {
 
                 RequestParams param = new RequestParams();
                 param.put("q", editText.getText().toString());
-                client.get("http://220.69.209.49/measureset/search",param, new JsonHttpResponseHandler(){
+                client.get("http://183.96.177.81:8090/measureset/search",param, new JsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response)  {
                         super.onSuccess(statusCode, headers, response);

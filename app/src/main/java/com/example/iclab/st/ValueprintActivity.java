@@ -31,6 +31,18 @@ public class ValueprintActivity extends AppCompatActivity {
         detail=findViewById(R.id.list_detail);
 
 
+
+        Intent intent = getIntent();
+        final ListView vList = findViewById(R.id.valueList);
+        final List<String> listinfo=new ArrayList<>();
+        final ArrayAdapter<String> listAdapter = new ArrayAdapter<> (this, android.R.layout.simple_list_item_1, listinfo);
+
+
+        if(intent.getExtras() != null)
+        {
+             pos = intent.getIntExtra("position",-1);
+        }
+
         appendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,18 +55,6 @@ public class ValueprintActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = getIntent();
-        final ListView vList = findViewById(R.id.valueList);
-        final List<String> listinfo=new ArrayList<>();
-        final ArrayAdapter<String> listAdapter = new ArrayAdapter<String> (this, android.R.layout.simple_list_item_1, listinfo);
-
-
-        if(intent.getExtras() != null)
-        {
-             pos = intent.getIntExtra("position",-1);
-        }
-
-
         detail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,6 +64,7 @@ public class ValueprintActivity extends AppCompatActivity {
                if(detailCheck){
                    CSurvey tmp =newCS.get(pos);
                    detail.setText("기본");
+
 //
                    ArrayList<String> list = new ArrayList<>();
                    ArrayList<Integer> list1 = new ArrayList<>();
@@ -114,9 +115,6 @@ public class ValueprintActivity extends AppCompatActivity {
                    longstr += "\n";
                    for(int i =0;i<list2.size();i++)
                        longstr += list3.get(i) +" : " +list2.get(i)+" 조\n";
-
-
-
                    //
 
                    listinfo.add(longstr);
@@ -133,7 +131,7 @@ public class ValueprintActivity extends AppCompatActivity {
                        for(int j=0;j<sl.points.length;j++)
                            pointSum+=sl.points[j]+"  ";
 
-                       firstData += "No. " + (i + 1) + "\n보호판 이름: " + sl.plate_id + "\n 뿌리 값: " + pointSum+"\n 메모 : "+sl.memo;// 뭐 적어주지.
+                       firstData += "No. " + (i + 1) + "\n 보호판 이름: " + sl.plate_id + "\n 뿌리 값: " + pointSum+"\n 메모 : "+sl.memo;// 뭐 적어주지.
 
                        listinfo.add(firstData);
                    }
@@ -152,7 +150,7 @@ public class ValueprintActivity extends AppCompatActivity {
             for(int j=0;j<sl.points.length;j++)
                 pointSum+=sl.points[j]+"  ";
 
-            firstData += "No. " + (i + 1) + "\n보호판 이름: " + sl.plate_id + "\n 뿌리 값: " + pointSum+"\n 메모 : "+sl.memo;// 뭐 적어주지.
+            firstData += "No. " + (i + 1) + "\n 보호판 이름: " + sl.plate_id + "\n 뿌리 값: " + pointSum+"\n 메모 : "+sl.memo;// 뭐 적어주지.
 
             listinfo.add(firstData);
         }

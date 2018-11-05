@@ -136,9 +136,9 @@ public class RegionsrchActivity extends AppCompatActivity {
 
                 final AsyncHttpClient client = new AsyncHttpClient();
                 client.setCookieStore(new PersistentCookieStore(RegionsrchActivity.this));
-                String url = "http://220.69.209.49/measureset/region/";
+                String url = "http://183.96.177.81:8090/measureset/region/";
                 if(sidocode == null)
-                    url = "http://220.69.209.49/measureset/region/";
+                    url = "http://183.96.177.81:8090/measureset/region/";
                 else if(gooncode == null)
                     url += sidocode;
                 else if(gucode == null)
