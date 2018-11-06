@@ -51,6 +51,7 @@ import static com.example.iclab.st.NewplaceActivity.GCSurvey;
 // 로딩화면 액티비티
 public class IntroActivity extends AppCompatActivity {
     private ProgressBar mProgress;
+    static String httpAddr="http://183.96.177.81:8090";
     static AddressData addressData=new AddressData();
     @Override
     public void onCreate(Bundle savedInstanceState) {

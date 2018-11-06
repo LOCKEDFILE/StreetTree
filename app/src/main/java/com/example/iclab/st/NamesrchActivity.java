@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
+
+import static com.example.iclab.st.IntroActivity.httpAddr;
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
 
 // 현장명으로 찾기 액티비티
@@ -81,7 +83,7 @@ public class NamesrchActivity extends AppCompatActivity {
 
                 RequestParams param = new RequestParams();
                 param.put("q", editText.getText().toString());
-                client.get("http://183.96.177.81:8090/measureset/search",param, new JsonHttpResponseHandler(){
+                client.get(httpAddr+"/measureset/search",param, new JsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response)  {
                         super.onSuccess(statusCode, headers, response);

@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import cz.msebera.android.httpclient.Header;
 
+import static com.example.iclab.st.IntroActivity.httpAddr;
+
 
 // 제품 사양 액티비티
 public class ProductActivity extends AppCompatActivity {
@@ -67,7 +69,7 @@ public class ProductActivity extends AppCompatActivity {
         final AsyncHttpClient client = new AsyncHttpClient();
         client.setCookieStore(new PersistentCookieStore(ProductActivity.this));
 
-        client.get(ProductActivity.this, "http://183.96.177.81:8090/plates", new JsonHttpResponseHandler() {
+        client.get(ProductActivity.this, httpAddr+"/plates", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);
@@ -152,7 +154,7 @@ public class ProductActivity extends AppCompatActivity {
                     if(attachmentUrl!=null) {
                         client.setCookieStore(a);
                         client.setURLEncodingEnabled(false);
-                            client.get("http://183.96.177.81:8090"+attachmentUrl, new FileAsyncHttpResponseHandler(ProductActivity.this) {
+                            client.get(httpAddr+attachmentUrl, new FileAsyncHttpResponseHandler(ProductActivity.this) {
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, File response) {
                                 if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {

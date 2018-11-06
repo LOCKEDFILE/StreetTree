@@ -41,6 +41,8 @@ import java.util.Date;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.ByteArrayEntity;
 
+import static com.example.iclab.st.IntroActivity.httpAddr;
+
 public class RootActivity extends AppCompatActivity {
 
     //그리기 뷰 전역 변수
@@ -132,7 +134,7 @@ public class RootActivity extends AppCompatActivity {
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    client.post(RootActivity.this,"http://183.96.177.81:8090/upload", params, new JsonHttpResponseHandler(){
+                    client.post(RootActivity.this,httpAddr+"/upload", params, new JsonHttpResponseHandler(){
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             super.onSuccess(statusCode, headers, response);

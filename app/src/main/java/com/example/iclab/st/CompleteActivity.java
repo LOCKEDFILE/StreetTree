@@ -43,6 +43,7 @@ import cz.msebera.android.httpclient.entity.mime.content.FileBody;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 
 
+import static com.example.iclab.st.IntroActivity.httpAddr;
 import static com.example.iclab.st.NamesrchActivity.checkAdd;
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
 import static com.example.iclab.st.SurveyActivity.frameId;
@@ -181,13 +182,13 @@ public class CompleteActivity extends AppCompatActivity{
                 entity = new StringEntity(new Gson().toJson(GCSurvey), "utf-8");
                 if(!is_appended)
                 {
-                    client.post(CompleteActivity.this, "http://183.96.177.81:8090/measureset/new", entity, "application/json", new AsyncHttpResponseHandler(){
+                    client.post(CompleteActivity.this, httpAddr+"/measureset/new", entity, "application/json", new AsyncHttpResponseHandler(){
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                             // 서버 연결
                             Log.e("SUc ::: ", " "+ statusCode);
-                        }
-                        @Override
+
+                    }
                         public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
                             // 서버 응답 없음
                             Log.e("ERROR ::: ", " "+ statusCode);
@@ -195,7 +196,7 @@ public class CompleteActivity extends AppCompatActivity{
                     });
 
                 }else {
-                    client.put(CompleteActivity.this, "http://183.96.177.81:8090/measureset/"+GCSurvey.measureset_id, entity, "application/json", new AsyncHttpResponseHandler(){
+                    client.put(CompleteActivity.this, httpAddr+"/measureset/"+GCSurvey.measureset_id, entity, "application/json", new AsyncHttpResponseHandler(){
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                             // 서버 연결

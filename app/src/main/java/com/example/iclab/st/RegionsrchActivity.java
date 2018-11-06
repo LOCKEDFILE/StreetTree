@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 import cz.msebera.android.httpclient.Header;
 
 import static com.example.iclab.st.IntroActivity.addressData;
+import static com.example.iclab.st.IntroActivity.httpAddr;
 import static com.example.iclab.st.NamesrchActivity.checkAdd;
 import static com.example.iclab.st.NamesrchActivity.newCS;
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
@@ -136,9 +137,9 @@ public class RegionsrchActivity extends AppCompatActivity {
 
                 final AsyncHttpClient client = new AsyncHttpClient();
                 client.setCookieStore(new PersistentCookieStore(RegionsrchActivity.this));
-                String url = "http://183.96.177.81:8090/measureset/region/";
+                String url = httpAddr+"/measureset/region/";
                 if(sidocode == null)
-                    url = "http://183.96.177.81:8090/measureset/region/";
+                    url = httpAddr+"/measureset/region/";
                 else if(gooncode == null)
                     url += sidocode;
                 else if(gucode == null)

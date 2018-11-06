@@ -58,6 +58,7 @@ import java.util.concurrent.ExecutionException;
 import cz.msebera.android.httpclient.Header;
 
 import static com.example.iclab.st.IntroActivity.addressData;
+import static com.example.iclab.st.IntroActivity.httpAddr;
 import static com.example.iclab.st.MapActivity.addressStr;
 import static com.example.iclab.st.MapActivity.getAddressName;
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
@@ -235,7 +236,7 @@ public class SurveyActivity extends AppCompatActivity {
 
         final AsyncHttpClient client=new AsyncHttpClient();
         client.setCookieStore(new PersistentCookieStore(SurveyActivity.this));
-        client.get(SurveyActivity.this,"http://183.96.177.81:8090/plates",new JsonHttpResponseHandler(){
+        client.get(SurveyActivity.this,httpAddr+"/plates",new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);

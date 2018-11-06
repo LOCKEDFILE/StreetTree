@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.client.entity.UrlEncodedFormEntity;
 
+import static com.example.iclab.st.IntroActivity.httpAddr;
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
 
 // 로그인 액티비티
@@ -69,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
                 RequestParams params = new RequestParams();
                 params.put("id", userID);
                 params.put("pw", userPassword);
-                client.post(LoginActivity.this,"http://183.96.177.81:8090/login", params,new JsonHttpResponseHandler(){
+                client.post(LoginActivity.this,httpAddr+"/login", params,new JsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         super.onSuccess(statusCode, headers, response);

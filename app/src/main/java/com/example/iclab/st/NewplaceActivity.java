@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,6 +36,7 @@ public class NewplaceActivity extends AppCompatActivity {
     EditText inputDefference;
     TextView contentTxV;
     protected static TextView displayDate;
+    static  boolean dateCh=false;
     long now = System.currentTimeMillis();
     Date date;
     String nowDate;
@@ -110,18 +113,23 @@ public class NewplaceActivity extends AppCompatActivity {
         // 저장 버튼 누르면 지도 화면으로 전환
         saveBtn.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                GCSurvey.siteName = inputHyunjang.getText().toString(); // 데이터저장
-                GCSurvey.createdAt = nowDate;
-                GCSurvey.deliveryTarget=level;
-                GCSurvey.deliveryDate=displayDate.getText().toString();
-                GCSurvey.differenceValue=inputDefference.getText().toString();
-                GCSurvey.clientName = inputBalju.getText().toString();
-                GCSurvey.salespersonName=inputMarketingname.getText().toString();
+                if(dateCh) {
+                    GCSurvey.siteName = inputHyunjang.getText().toString(); // 데이터저장
+                    GCSurvey.createdAt = nowDate;
+                    GCSurvey.deliveryTarget = level;
+                    GCSurvey.deliveryDate = displayDate.getText().toString();
+                    GCSurvey.differenceValue = inputDefference.getText().toString();
+                    GCSurvey.clientName = inputBalju.getText().toString();
+                    GCSurvey.salespersonName = inputMarketingname.getText().toString();
 
 
-              Intent intent = new Intent(getApplicationContext(), MapActivity.class); // 원래 , 맵으로이동이지만 잠시 테스트 하기 위해
+                    Intent intent = new Intent(getApplicationContext(), MapActivity.class); // 원래 , 맵으로이동이지만 잠시 테스트 하기 위해
 //                Intent intent = new Intent(getApplicationContext(), SurveyActivity.class); // 잠시 테스트하기 위해 변경
-                startActivity(intent);
+                    startActivity(intent);
+                }
+                else{
+                    Toast.makeText(NewplaceActivity.this,"납품예정일을 입력하세요",Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -139,7 +147,7 @@ public class NewplaceActivity extends AppCompatActivity {
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             displayDate.setText(String.format("%04d",year) + "-" + String.format("%02d",month+1) + "-" + String.format("%02d",day));
-
+            dateCh=true;
         }
     }
 }
