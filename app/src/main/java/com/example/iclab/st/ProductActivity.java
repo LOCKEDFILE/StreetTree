@@ -53,7 +53,7 @@ public class ProductActivity extends AppCompatActivity {
         final List<String> attach = new ArrayList<>();//
         final List<String> listName0 = new ArrayList<>();// 리스트 전체
         final List<String> listName1 = new ArrayList<>();// ㅁㅁㅁ-ㅁㅁㅁ
-        final List<String> listName2 = new ArrayList<>();// ㅁㅁㅁ-ㅁㅁㅁ-ㅁ
+//        final List<String> listName2 = new ArrayList<>();// ㅁㅁㅁ-ㅁㅁㅁ-ㅁ
         final List<String> listName3 = new ArrayList<>();// ㅁㅁㅁ-ㅁㅁㅁ-ㅁㅁㅁ
 //
 //        CookieSyncManager.createInstance(ProductActivity.this.getApplicationContext());
@@ -79,25 +79,17 @@ public class ProductActivity extends AppCompatActivity {
                         JSONObject object = response.getJSONObject(i);
                         String plateId = object.getString("plate_id");
 
+                        Log.e("PLATE ::::", " "+plateId);
                         ///
-
-//                        ///
-//                        String[] splitID=plateId.split("-");
-//                        if(splitID.length>2){
-//                            if (!listName1.contains(splitID[0]+"-"+splitID[1])) {
-//                                listName1.add(splitID[0]+"-"+splitID[1]));
-//                                attach.add(object.getString("attachmentUrl"));
-//                            }
-//                        }
-//                        else{
                         String[] splitID=plateId.split("-");
                         if(splitID.length>2) {
                             listName0.add(plateId);
                             ind = plateId.lastIndexOf("-");
                             if (!listName1.contains(plateId.substring(0, ind))) {
                                 listName1.add(plateId.substring(0, ind));
-                                attach.add(object.getString("attachmentUrl"));
+
                             }
+                            attach.add(object.getString("attachmentUrl"));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -131,14 +123,15 @@ public class ProductActivity extends AppCompatActivity {
 
                 backBtn5.setVisibility(View.VISIBLE);
                 if (page == 0) {
-                    listName2.clear();
+//                    listName2.clear();
+                    listName3.clear();
                     // 리스트 클릭시 세부이름?
                     for (int i = 0; i < listName0.size(); i++)
-                        if (listName0.get(i).contains(listName1.get(position)) && !listName2.contains(listName0.get(i).substring(0, ind + 2))) {
-                            listName2.add(listName0.get(i).substring(0, ind + 2));
+                        if (listName0.get(i).contains(listName1.get(position))){// && !listName2.contains(listName0.get(i).substring(0, ind + 2))) {
+////                            listName2.add(listName0.get(i).substring(0, ind + 2));
                             listName3.add(listName0.get(i));
                         }
-                    listAdapter2 = new ArrayAdapter<String>(ProductActivity.this, android.R.layout.simple_list_item_1, listName2);
+                    listAdapter2 = new ArrayAdapter<String>(ProductActivity.this, android.R.layout.simple_list_item_1, listName3);
                     listview.setAdapter(listAdapter2);
                     page = 1;
                 } else if (page == 1) {
@@ -151,7 +144,8 @@ public class ProductActivity extends AppCompatActivity {
                     AsyncHttpClient client = new AsyncHttpClient();
                     PersistentCookieStore a=new PersistentCookieStore(ProductActivity.this);
 
-                    if(attachmentUrl!=null) {
+                    if(attachmentUrl.length()>4) {
+                        Toast.makeText(ProductActivity.this,"파일을 불러오는 중입니다.",Toast.LENGTH_SHORT).show();
                         client.setCookieStore(a);
                         client.setURLEncodingEnabled(false);
                             client.get(httpAddr+attachmentUrl, new FileAsyncHttpResponseHandler(ProductActivity.this) {
@@ -159,6 +153,7 @@ public class ProductActivity extends AppCompatActivity {
                             public void onSuccess(int statusCode, Header[] headers, File response) {
                                 if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                                     FileOutputStream os;
+//                                    if(response!=null)
                                     try {
                                         newfile = new File(Environment.getExternalStorageDirectory(),"Test.pdf");
 
@@ -180,6 +175,7 @@ public class ProductActivity extends AppCompatActivity {
                                         Toast.makeText(ProductActivity.this, "PDF 파일이 없습니다.", Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
+                                    Toast.makeText(ProductActivity.this, "PDF 파일이 없습니다.", Toast.LENGTH_SHORT).show();
                                     Log.d("Error", "메모리 로드 안됨");
                                 }
                                 /////////////////// 캐시 파일 비우기

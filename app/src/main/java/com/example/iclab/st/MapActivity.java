@@ -37,6 +37,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import static com.example.iclab.st.FunctionActivity.track_latitude;
+import static com.example.iclab.st.FunctionActivity.track_longitude;
 import static com.example.iclab.st.NewplaceActivity.GCSurvey;
 
 // 지도 액티비티
@@ -49,17 +51,18 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
     boolean isButtonVisible = false;
     double latitude;
     double longitude;
-    static String addressStr="";
-    public static MapActivity mapActivity=null;
+    static String addressStr = "";
+    public static MapActivity mapActivity = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        mapActivity=this;
+        mapActivity = this;
 
         final MapView mapView = new MapView(MapActivity.this);
+
 
         mapView.setDaumMapApiKey("e95ede72416f09346c75c0acb52472ed");
         RelativeLayout container = findViewById(R.id.map);
@@ -128,15 +131,14 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
         });
 
 
-
-
-        moveMapViewCurrentPosition(mapView);// 현재위치로 시작1
     }
-    static MapReverseGeoCoder.ReverseGeoCodingResultListener reverseGeoCodingResultListener=new MapReverseGeoCoder.ReverseGeoCodingResultListener() {
+
+    static MapReverseGeoCoder.ReverseGeoCodingResultListener reverseGeoCodingResultListener = new MapReverseGeoCoder.ReverseGeoCodingResultListener() {
         @Override
         public void onReverseGeoCoderFoundAddress(MapReverseGeoCoder mapReverseGeoCoder, String s) {
-            Log.e("TEST", "  "+s);
-            addressStr=s;
+            Log.e("TEST", "  " + s);
+            addressStr = s;
+            Toast.makeText(mapActivity, addressStr, Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -144,11 +146,13 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
 
         }
     };
-    public static void getAddressName(double latitude,double longitude){// ex ) 서울 강북구 수유동 / 서울 종로구 부암동 . (시) (구) (동)  / 충남 아산시 도고면 와산리 / 충남 아산시 송악면 동화리
-        MapReverseGeoCoder reverseGeoCoder = new MapReverseGeoCoder("e95ede72416f09346c75c0acb52472ed",MapPoint.mapPointWithGeoCoord(latitude,longitude), reverseGeoCodingResultListener, mapActivity);
+
+    public static void getAddressName(double latitude, double longitude) {// ex ) 서울 강북구 수유동 / 서울 종로구 부암동 . (시) (구) (동)  / 충남 아산시 도고면 와산리 / 충남 아산시 송악면 동화리
+        MapReverseGeoCoder reverseGeoCoder = new MapReverseGeoCoder("e95ede72416f09346c75c0acb52472ed", MapPoint.mapPointWithGeoCoord(latitude, longitude), reverseGeoCodingResultListener, mapActivity);
         reverseGeoCoder.startFindingAddress();
 //        reverseGeoCoder.findAddressForMapPointSync("e95ede72416f09346c75c0acb52472ed",MapPoint.mapPointWithGeoCoord(latitude,longitude));
     }
+
     @Override
     public void onMapViewInitialized(MapView mapView) {
         for (int i = 0; i < GCSurvey.list.size(); i++) {
@@ -157,20 +161,23 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
             marker.setMapPoint(MapPoint.mapPointWithGeoCoord(GCSurvey.list.get(i).latitude, GCSurvey.list.get(i).longitude));
             marker.setMarkerType(MapPOIItem.MarkerType.BluePin); // 기본으로 제공하는 BluePin 마커 모양.
             marker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin); // 마커를 클릭했을때, 기본으로 제공하는 RedPin 마커 모양.
-            setCurrentPosition();
+            moveMapViewCurrentPosition(mapView);
             mapView.addPOIItem(marker);
         }
-
-        latitude=37.566535f;
-        longitude=126.97796919999996f;
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 200, 1, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 200, 1, locationListener);
-            return;
+        moveMapViewCurrentPosition(mapView);
+        if(GCSurvey.list.size()>0){
+            latitude=GCSurvey.list.get(GCSurvey.list.size()-1).latitude;
+            longitude=GCSurvey.list.get(GCSurvey.list.size()-1).longitude;
+        }else{
+            if(track_latitude==0) {
+                latitude = 37.566535f;
+                longitude = 126.97796919999996f;
+            }
+            else{
+                latitude=track_latitude;
+                longitude=track_longitude;
+            }
         }
-
         mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(latitude, longitude), true);
 
     }
@@ -186,28 +193,11 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
             // 위치 정보 접근 요청
             ActivityCompat.requestPermissions(MapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }else {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 200, 1, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 200, 1, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 100, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, locationListener);
             mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(latitude, longitude), true);
-
         }
     }
-    public void setCurrentPosition() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.removeUpdates(locationListener);
-
-        // 권한이 허용되어있지 않은 경우
-        if (ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // 위치 정보 접근 요청
-            ActivityCompat.requestPermissions(MapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-        }else {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 200, 1, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 200, 1, locationListener);
-        }
-    }
-
     @Override
     public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint) {
     }
@@ -222,26 +212,28 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
         if (!isButtonVisible) {
             // 마커 생성
             marker = new MapPOIItem();
-            marker.setItemName("AKM");
+            marker.setItemName("");
             marker.setTag(0);
             marker.setMapPoint(mapPoint);
             marker.setMarkerType(MapPOIItem.MarkerType.BluePin); // 기본으로 제공하는 BluePin 마커 모양.
             marker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin); // 마커를 클릭했을때, 기본으로 제공하는 RedPin 마커 모양.
-            MapReverseGeoCoder reverseGeoCoder = new MapReverseGeoCoder("e95ede72416f09346c75c0acb52472ed",mapPoint, reverseGeoCodingResultListener, MapActivity.this);
-            reverseGeoCoder.startFindingAddress();
-
-//            markerList.add(marker);
-
             mapView.addPOIItem(marker);
-            Toast.makeText(MapActivity.this,addressStr,Toast.LENGTH_LONG).show();
+
             // 버튼 활성화
             applyButton.setVisibility(View.VISIBLE);
             cancelButton.setVisibility(View.VISIBLE);
 
             clickPoint = mapPoint;
+            longitude=mapPoint.getMapPointGeoCoord().longitude;
+            latitude=mapPoint.getMapPointGeoCoord().latitude;
+            MapReverseGeoCoder reverseGeoCoder = new MapReverseGeoCoder("e95ede72416f09346c75c0acb52472ed",mapPoint, reverseGeoCodingResultListener, MapActivity.this);
+            reverseGeoCoder.startFindingAddress();
+
+
             isButtonVisible = true;
         }
     }
+
 
     @Override
     public void onMapViewDoubleTapped(MapView mapView, MapPoint mapPoint) {

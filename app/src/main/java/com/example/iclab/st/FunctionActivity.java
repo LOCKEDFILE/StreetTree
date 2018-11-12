@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -27,11 +30,15 @@ import static com.example.iclab.st.NewplaceActivity.GCSurvey;
 // 기능선택 액티비티
 public class FunctionActivity extends AppCompatActivity {
     String str = null;
+    static  double track_longitude;
+    static  double track_latitude;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_function);
-
+        setCurrentPosition();
         Button bt1 = findViewById(R.id.button1);
         Button bt2 = findViewById(R.id.button2);
         Button bt3 = findViewById(R.id.button3);
@@ -159,8 +166,8 @@ public class FunctionActivity extends AppCompatActivity {
                 list.treeLocation= object.getString("treeLocation");
                 list.memo = object.getString("memo");
                 list.framecheck=object.getBoolean("frameCheck");;
-                list.gagakCheck=object.getBoolean("gagakCheck");;
-                list.jijuguCheck=object.getBoolean("jijuguCheck");;
+                list.gagakcheck=object.getBoolean("gagakcheck");;
+                list.jijugucheck=object.getBoolean("jijugucheck");;
                 for(int k=0;k< object.getJSONArray("points").length();k++)
                     points[k] = object.getJSONArray("points").getString(k);
                 GCSurvey.list.add(list);
@@ -170,6 +177,53 @@ public class FunctionActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+
+
+
+
+
+    public void setCurrentPosition() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.removeUpdates(locationListener);
+
+        // 권한이 허용되어있지 않은 경우
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // 위치 정보 접근 요청
+            ActivityCompat.requestPermissions(FunctionActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        }else {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        }
+    }
+    private final LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            track_latitude = location.getLatitude();   //위도
+            track_longitude = location.getLongitude(); //경도
+
+            locationManager.removeUpdates(locationListener);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+    };
+
 
 }
 

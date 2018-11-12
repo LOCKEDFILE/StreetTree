@@ -56,8 +56,8 @@ public class CSurvey {
         tmp.gu=gu;
         tmp.memo=etStr;
         tmp.framecheck=frameCh;
-        tmp.gagakCheck=gagak;
-        tmp.jijuguCheck=jiju;
+        tmp.gagakcheck=gagak;
+        tmp.jijugucheck=jiju;
 
         GCSurvey.list.add(tmp);
     }
@@ -106,8 +106,8 @@ class  SurveyList {
     public String measure_id="";
 
     public boolean framecheck;// 받침틀 납품여부
-    public boolean gagakCheck;// 가각 여부
-    public boolean jijuguCheck;// 지주구 여부
+    public boolean gagakcheck;// 가각 여부
+    public boolean jijugucheck;// 지주구 여부
 
     public SurveyList() {
         points = new String[4];
@@ -131,7 +131,9 @@ class  SurveyList {
 
             treeNumber = JObject.getString("treeNumber");
             isInstalled = JObject.getBoolean("isInstalled");
-            framecheck=JObject.getString("framecheck")=="1"?true:false;
+            framecheck= JObject.getString("framecheck").equals("1");
+            gagakcheck= JObject.getString("gagakcheck").equals("1");
+            jijugucheck= JObject.getString("jijugucheck").equals("1");
             for(int i=0;i< JObject.getJSONArray("points").length();i++)
                 points[i] = JObject.getJSONArray("points").getString(i);
             rootImageId = JObject.getString("rootImageUrl");

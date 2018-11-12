@@ -83,8 +83,6 @@ public class SurveyActivity extends AppCompatActivity {
     String goon;
     String gu;
 
-    View[] line;
-
     EditText et;
     String etStr="";
     ArrayList<String> list1=new ArrayList<>();
@@ -112,19 +110,6 @@ public class SurveyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
 
-        //
-        line=new View[9];
-        line[0]=findViewById(R.id.view1);
-        line[1]=findViewById(R.id.view1_1);
-        line[2]=findViewById(R.id.view1_2);
-        line[3]=findViewById(R.id.view2);
-        line[4]=findViewById(R.id.view2_1);
-        line[5]=findViewById(R.id.view2_2);
-        line[6]=findViewById(R.id.view3);
-        line[7]=findViewById(R.id.view3_1);
-        line[8]=findViewById(R.id.view3_2);
-        for(int i=0;i<9;i++)
-            line[i].setVisibility(View.INVISIBLE);
         //
         plateView=findViewById(R.id.selectPP);
 
@@ -503,14 +488,10 @@ public class SurveyActivity extends AppCompatActivity {
         frame.removeView(point4);
         for(int k=0;k<4;k++)
             frame.removeView(inputP[k]);
-        for(int i=0;i<9;i++)
-            line[i].setVisibility(View.INVISIBLE);
         if(index!=0){
             frame.addView(point4);
             for(int k=0;k<2+index;k++)
                 frame.addView(inputP[k]);
-            for(int i=0;i<9;i++)
-                line[i].setVisibility(View.VISIBLE);
         }
 
     }
