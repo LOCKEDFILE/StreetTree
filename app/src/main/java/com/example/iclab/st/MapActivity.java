@@ -155,7 +155,9 @@ public class MapActivity extends AppCompatActivity implements MapView.MapViewEve
 
     @Override
     public void onMapViewInitialized(MapView mapView) {
+        Log.e("GCSURVEY:::: ", " size : " +GCSurvey.list.size());
         for (int i = 0; i < GCSurvey.list.size(); i++) {
+            Log.e("long:::: ", " size : " +GCSurvey.list.get(i).longitude);
             marker = new MapPOIItem();
             marker.setTag(0);
             marker.setMapPoint(MapPoint.mapPointWithGeoCoord(GCSurvey.list.get(i).latitude, GCSurvey.list.get(i).longitude));

@@ -165,9 +165,9 @@ public class FunctionActivity extends AppCompatActivity {
                 list.isInstalled = object.getBoolean("isInstalled");
                 list.treeLocation= object.getString("treeLocation");
                 list.memo = object.getString("memo");
-                list.framecheck=object.getBoolean("frameCheck");;
-                list.gagakcheck=object.getBoolean("gagakcheck");;
-                list.jijugucheck=object.getBoolean("jijugucheck");;
+                list.framecheck=object.getBoolean("framecheck");
+                list.gagakcheck=object.getBoolean("gagakcheck");
+                list.jijugucheck=object.getBoolean("jijugucheck");
                 for(int k=0;k< object.getJSONArray("points").length();k++)
                     points[k] = object.getJSONArray("points").getString(k);
                 GCSurvey.list.add(list);

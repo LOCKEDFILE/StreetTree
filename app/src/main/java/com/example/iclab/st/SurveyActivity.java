@@ -112,8 +112,6 @@ public class SurveyActivity extends AppCompatActivity {
 
         //
         plateView=findViewById(R.id.selectPP);
-
-
         //
 
 
@@ -144,6 +142,7 @@ public class SurveyActivity extends AppCompatActivity {
         frame =findViewById(R.id.frame);
         point4 = findViewById(R.id.point4);
         ckBox = findViewById(R.id.checkBox);
+        ckBox.setVisibility(View.INVISIBLE);
         inputP=new EditText[4];
         for(int k=0;k<4;k++){
 
@@ -184,6 +183,7 @@ public class SurveyActivity extends AppCompatActivity {
             }
         });
 
+
         // 가각 제어(설치전, 설치후)
         rg1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -214,6 +214,8 @@ public class SurveyActivity extends AppCompatActivity {
         // 실측시작 버튼 누르면 실측값 입력 화면 출력
         startBtn.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
+                if(rg.getCheckedRadioButtonId()==R.id.afterRadio)
+                    index=2;
                 changeView(index);
             }
         });
@@ -431,6 +433,9 @@ public class SurveyActivity extends AppCompatActivity {
                     if (!store.equals("선택한 보호판")) {
                         Intent intent = new Intent(getApplicationContext(), CompleteActivity.class);
                         make_list(latitude, longitude); // 저장
+                        Gson newGson = new Gson();
+                        String json = newGson.toJson(GCSurvey);
+                        SaveSharedPreference.setUserData(SurveyActivity.this, json);
                         startActivity(intent);
                         finish();
                     } else {
