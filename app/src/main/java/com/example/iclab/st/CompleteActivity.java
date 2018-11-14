@@ -82,7 +82,7 @@ public class CompleteActivity extends AppCompatActivity{
             for(int j=0;j<4&&GCSurvey.list.get(i).points[j]!=null;j++)
                 pointSum+=GCSurvey.list.get(i).points[j]+"  ";
 
-            firstData += "No. " + (i + 1) + "\n보호판 이름: " + GCSurvey.list.get(i).plate_id + "\n 뿌리 값: " + pointSum + "\n\n";// 마지막 페이지 출력문
+            firstData += "No. " + (i + 1) + "\n보호판 이름: " + GCSurvey.list.get(i).plate_id + "\n뿌리 값: " + pointSum +"\n메모: " + GCSurvey.list.get(i).memo  +"\n\n";// 마지막 페이지 출력문
 
         }
 

@@ -121,14 +121,23 @@
             android:background="@drawable/rounded_shape"
             android:backgroundTint="@color/color_drakGray"/>
 
+        <Button
+            android:id="@+id/logout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="20dp"
+            android:padding="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:text="로그아웃"
+            android:textColor="@color/color_background"
+            android:backgroundTint="@color/color_lightBlue"
+            android:fontFamily="@font/godo"
+            android:textSize="22dp"
+            android:background="@drawable/rounded_shape" />
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="로그아웃"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
 </android.support.constraint.ConstraintLayout>
 

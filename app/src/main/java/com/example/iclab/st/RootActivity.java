@@ -56,6 +56,7 @@ public class RootActivity extends AppCompatActivity {
     File photoFile;
     File screenShot;
     String screenShotName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,11 +117,12 @@ public class RootActivity extends AppCompatActivity {
         findViewById(R.id.savePicture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Toast.makeText(getApplicationContext(), "사진 저장 중...", Toast.LENGTH_SHORT).show();
-                if(photoFile==null){
-                    imageId=null;
+                if (photoFile == null) {
+                    imageId = null;
                     Toast.makeText(getApplicationContext(), "사진 없음", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     final AsyncHttpClient client = new AsyncHttpClient();
                     client.setCookieStore(new PersistentCookieStore(RootActivity.this));
 
@@ -134,26 +136,29 @@ public class RootActivity extends AppCompatActivity {
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    client.post(RootActivity.this,httpAddr+"/upload", params, new JsonHttpResponseHandler(){
+                    client.post(RootActivity.this, httpAddr + "/upload", params, new JsonHttpResponseHandler() {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             super.onSuccess(statusCode, headers, response);
                             Toast.makeText(getApplicationContext(), "사진 전송 성공", Toast.LENGTH_SHORT).show();
                             try {
-                                imageId=response.getString("file_id");
+                                imageId = response.getString("file_id");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                             screenShot.delete();// 스크린 캡쳐 사진 삭제
-                            finish(); // RootActivity 종료
+//                                finish(); // RootActivity 종료
                         }
+
                         @Override
                         public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                             super.onFailure(statusCode, headers, throwable, errorResponse);
-                            Toast.makeText(getApplicationContext(), "서버 응답 없음\nstatus: "+statusCode, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "서버 응답 없음\nstatus: " + statusCode, Toast.LENGTH_SHORT).show();
                         }
                     });
+                    finish(); // RootActivity 종료
                     photoFile.delete();// 원본 파일 삭제
+
                 }
             }
         });

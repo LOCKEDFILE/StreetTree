@@ -41,12 +41,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/number"
-            android:layout_marginLeft="20pt"
-            android:layout_marginTop="10pt"
+            android:layout_marginLeft="29dp"
+            android:layout_marginTop="21dp"
             android:layout_toRightOf="@id/protectPanel"
             android:fontFamily="@font/godo"
             android:text="선택한 보호판"
-            android:textSize="10pt" />
+            android:textSize="9pt" />
 
         <TextView
             android:id="@+id/treeNumber"
@@ -86,12 +86,11 @@
             android:id="@+id/modifyBtn"
             android:layout_width="30pt"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/completeBtn"
             android:layout_alignRight="@+id/completeBtn"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="32dp"
+            android:layout_alignParentEnd="true"
             android:layout_marginTop="53dp"
-            android:layout_toEndOf="@+id/selectPP"
+            android:layout_marginEnd="10dp"
             android:background="@drawable/rounded_shape"
             android:backgroundTint="@color/color_drakGray"
             android:fontFamily="@font/godo"
@@ -121,21 +120,21 @@
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/beforeRadio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/godo"
-                android:text="설치 전" />
-
-            <RadioButton
                 android:id="@+id/afterRadio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20pt"
-                android:layout_toRightOf="@id/beforeRadio"
                 android:checked="true"
                 android:fontFamily="@font/godo"
                 android:text="설치 후" />
+
+            <RadioButton
+                android:id="@+id/beforeRadio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7pt"
+                android:layout_toRightOf="@id/afterRadio"
+                android:fontFamily="@font/godo"
+                android:text="설치 전" />
         </RadioGroup>
         <!---->
         <TextView
@@ -152,27 +151,28 @@
             android:id="@+id/radioGroup1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/selectPP"
-            android:layout_alignBottom="@+id/supportPanel1"
+            android:layout_marginLeft="17pt"
+            android:layout_marginTop="1pt"
+            android:layout_toRightOf="@id/supportPanel"
             android:layout_below="@+id/radioGroup"
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/beforeRadio1"
+                android:id="@+id/afterRadio1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:fontFamily="@font/godo"
-                android:text="설치 전" />
+                android:text="유" />
 
             <RadioButton
-                android:id="@+id/afterRadio1"
+                android:id="@+id/beforeRadio1"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="20pt"
                 android:layout_toRightOf="@id/beforeRadio1"
                 android:fontFamily="@font/godo"
-                android:text="설치 후" />
+                android:text="무" />
         </RadioGroup>
         <!--//-->
         <TextView
@@ -192,25 +192,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/radioGroup1"
-            android:layout_alignStart="@+id/selectPP"
+            android:layout_marginLeft="17pt"
+            android:layout_marginTop="1pt"
+            android:layout_toRightOf="@id/supportPanel"
             android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/beforeRadio2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:fontFamily="@font/godo"
-                android:text="설치 전" />
 
             <RadioButton
                 android:id="@+id/afterRadio2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checked="true"
+                android:fontFamily="@font/godo"
+                android:text="유" />
+
+            <RadioButton
+                android:id="@+id/beforeRadio2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="20pt"
                 android:layout_toRightOf="@id/beforeRadio2"
                 android:fontFamily="@font/godo"
-                android:text="설치 후" />
+                android:text="무" />
         </RadioGroup>
 
         <Button
@@ -365,8 +367,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/radioGroup2"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="130dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
             android:background="@drawable/rounded_shape"
             android:backgroundTint="@color/color_drakGray"
             android:text="메모"

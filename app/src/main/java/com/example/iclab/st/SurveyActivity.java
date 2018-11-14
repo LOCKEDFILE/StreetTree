@@ -1,10 +1,7 @@
 package com.example.iclab.st;
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -21,10 +18,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,22 +32,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -95,7 +75,7 @@ public class SurveyActivity extends AppCompatActivity {
     static ArrayList<String> frameId=new ArrayList<>();
     AlertDialog.Builder alt_bld;
     TextView plateView;
-    boolean frameCh=false;
+    boolean frameCh=true;
     boolean gagakCh=true;
     boolean jijuguCh=true;
     static String store ="";
@@ -103,6 +83,7 @@ public class SurveyActivity extends AppCompatActivity {
     double latitude;
     double longitude;
     boolean sujung=false;
+    int[] setPos=new int[3];
     AlertDialog alert;
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -110,14 +91,15 @@ public class SurveyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
 
+        for(int i=0; i<3;i++)
+            setPos[i]=-1;
         //
         plateView=findViewById(R.id.selectPP);
         //
 
 
         //
-        if(store.length() != 0)
-            plateView.setText(store);
+
 
         // 위도 경도 좌표 값
         Intent preIntent = getIntent();
@@ -144,6 +126,28 @@ public class SurveyActivity extends AppCompatActivity {
         ckBox = findViewById(R.id.checkBox);
         ckBox.setVisibility(View.INVISIBLE);
         inputP=new EditText[4];
+
+
+        if(GCSurvey.list.size()>0)
+            store=GCSurvey.list.get(GCSurvey.list.size()-1).plate_id;
+
+        if(store.length() != 0) {
+            index=0;
+            plateView.setText(store);
+            String[] tmp = store.split("-");
+            Log.e("SPLI::: "," split " + tmp.length + "   "+store+" "+ index);
+            if(tmp.length>2){
+                startBtn.setVisibility(View.INVISIBLE);
+                changeView(index);
+            }
+            else{
+                startBtn.setVisibility(View.VISIBLE);
+                changeView(index);
+            }
+
+        }
+
+
         for(int k=0;k<4;k++){
 
 
@@ -169,16 +173,17 @@ public class SurveyActivity extends AppCompatActivity {
             }
         });
 
-
-        // 라디오버튼 제어(설치전, 설치후)
+        // 라디오버튼 제어(유, 무)
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public  void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
                 if(i == R.id.beforeRadio) {
                     index = 1;
+                    frameCh=false;
                 }
                 else if(i == R.id.afterRadio) {
                     index = 2;
+                    frameCh=true;
                 }
             }
         });
@@ -189,11 +194,11 @@ public class SurveyActivity extends AppCompatActivity {
             @Override
             public  void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
                 if(i == R.id.beforeRadio1) {
-                    gagakCh=true;
+                    gagakCh=false;
 
                 }
                 else if(i == R.id.afterRadio1) {
-                    gagakCh=false;
+                    gagakCh=true;
 
                 }
             }
@@ -206,7 +211,7 @@ public class SurveyActivity extends AppCompatActivity {
                     jijuguCh=false;
                 }
                 else if(i == R.id.afterRadio2) {
-                    jijuguCh=false;
+                    jijuguCh=true;
                 }
             }
         });
@@ -261,7 +266,6 @@ public class SurveyActivity extends AppCompatActivity {
         // 수정 버튼 누르면 보호판 선택 화면으로 전환
         modifyBtn.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                RadioGroup frameRg;
                 sujung=true;
                 alt_bld = new AlertDialog.Builder(SurveyActivity.this);
                 alt_bld.setPositiveButton("확인", new DialogInterface.OnClickListener() {
@@ -279,14 +283,17 @@ public class SurveyActivity extends AppCompatActivity {
                 sp2= dialogView.findViewById(R.id.sp2);
                 sp3= dialogView.findViewById(R.id.sp3);
 
+                if(setPos[0]>0)
+                    sp1.setSelection(setPos[0]);
+
                 // sp1.getItem 같은 뭔가 있는거 확인
-	// store = sp1.getItem(0).getText() +g;
+	            // store = sp1.getItem(0).getText() +g;
 
                 sp1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int ind, long l) {
                         str1=list1.get(ind);
-
+                        setPos[0]=ind;
                         sp2.invalidate();
                         list2.clear();
                         for(int i=0;i<plateId.size();i++) {
@@ -301,7 +308,13 @@ public class SurveyActivity extends AppCompatActivity {
 
                         Collections.sort(list2);
                         ArrayAdapter<String> listAdap2 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list2);
+
+
+
+
                         sp2.setAdapter(listAdap2);
+                        if(setPos[1]>0)
+                            sp2.setSelection(setPos[1]);
 
                     }
 
@@ -316,6 +329,7 @@ public class SurveyActivity extends AppCompatActivity {
                 sp2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int ind, long l) {
+                        setPos[1]=ind;
                         str2=str1+"-"+list2.get(ind);
                         plateView.setText(str2);
                         list3.clear();
@@ -338,6 +352,9 @@ public class SurveyActivity extends AppCompatActivity {
                         ArrayAdapter<String> listAdap3 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list3);
                         sp3.setAdapter(listAdap3);
 
+                        if(setPos[2]>0)
+                            sp3.setSelection(setPos[2]);
+
                     }
 
                     @Override
@@ -348,15 +365,21 @@ public class SurveyActivity extends AppCompatActivity {
 
                 // plateView 에 출력
                 sp3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int ind, long l) {
+                        setPos[2]=ind;
 //                completeBtn.setEnabled(true);
                         if(ind==0){
+
                             plateView.setText(str2);
                             startBtn.setVisibility(View.VISIBLE);
 //                    GCSurvey.list.get(GCSurvey.list.size()-1).plate_id=str2+"-"+list3.get(ind);
                         }
                         else{
+                            index=0;
+                            changeView(index); // 실측화면 초기화
                             plateView.setText(str2+"-"+list3.get(ind));
                             store = plateView.getText().toString();
                             startBtn.setVisibility(View.INVISIBLE);
@@ -370,24 +393,29 @@ public class SurveyActivity extends AppCompatActivity {
                         store = plateView.getText().toString();
                     }
                 });
-                frameRg=dialogView.findViewById(R.id.group);
-                frameRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                    @Override
-                    public  void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                        if(i == R.id.radioButton) {// 1
-                            frameCh=true;
-                        }
-                        else if(i == R.id.radioButton2) {// 2
-                            frameCh=false;
-                        }
+//                frameRg=dialogView.findViewById(R.id.group);
+//                frameRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//                    @Override
+//                    public  void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+//                        if(i == R.id.radioButton) {// 1
+//                            frameCh=true;
+//                        }
+//                        else if(i == R.id.radioButton2) {// 2
+//                            frameCh=false;
+//                        }
+//
+//                    }
+//                });
 
-                    }
-                });
+
                 alt_bld.setView(dialogView);
                 alt_bld.setTitle("보호판 선택");
                 Collections.sort(list1);
                 ArrayAdapter<String> listAdap1 = new ArrayAdapter<String>(SurveyActivity.this, R.layout.support_simple_spinner_dropdown_item, list1);
                 sp1.setAdapter(listAdap1);
+
+
+
                 alt_bld.show();
             }
 
